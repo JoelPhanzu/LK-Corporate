@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LK-Corporate
 
-## Getting Started
+Site vitrine et back-office de **LK-CORPORATE S.A.S.U.**, entreprise de génie
+civil, travaux publics et logistique (Moise Lwamba).
 
-First, run the development server:
+Le site présente les neuf domaines d'activité, publie les réalisations et les
+actualités, et collecte les demandes de devis. Un espace d'administration permet
+de gérer ces contenus et de suivre les demandes jusqu'à la livraison.
+
+## Stack
+
+| | |
+|---|---|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Langage | TypeScript |
+| Styles | Tailwind CSS v4, tokens sémantiques |
+| Base de données | PostgreSQL via Prisma |
+| Stockage et authentification | Supabase |
+
+## Démarrer
 
 ```bash
+npm install
+cp .env.example .env    # puis renseigner les variables
+npm run db:migrer       # applique les migrations Prisma
+npm run setup:stockage  # crée les buckets Supabase
+npm run setup:admin     # crée le premier compte administrateur
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run verifier` contrôle l'installation de bout en bout : variables
+d'environnement, connexion à la base, migrations, buckets, compte
+administrateur. Chaque échec indique la commande qui le corrige.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Commande | Rôle |
+|---|---|
+| `npm run dev` | Serveur de développement |
+| `npm run build` | Build de production |
+| `npm run lint` | ESLint |
+| `npm run db:migrer` | Migrations Prisma |
+| `npm run db:studio` | Prisma Studio |
+| `npm run verifier` | Contrôle de l'installation |
+| `npm run marque:assets` | Régénère les déclinaisons du logo |
 
-## Learn More
+## Organisation
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/app/(public)     pages publiques
+src/app/(admin)      espace d'administration
+src/components       composants partagés (ui, public, admin)
+src/lib              domaines métier, accès aux données, validations
+prisma               schéma et migrations
+scripts              outillage d'installation et de marque
+Images et logos      fichiers source du logo, livrés par le client
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Charte graphique
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Les couleurs sont prélevées sur le logo définitif : marine `#1b2a4a`, rouge
+`#bf3324`, rose `#dda197`. Elles sont déclarées une seule fois dans
+`src/app/globals.css`, sous forme de tokens sémantiques (`surface`, `ink`,
+`accent`, `line`) que les composants sont seuls à consommer. Aucune couleur
+brute ne doit apparaître dans un composant : c'est ce qui permet de rebrander le
+site en ne touchant qu'un fichier, et de basculer en mode sombre sans disséminer
+des variantes `dark:`.
 
-## Deploy on Vercel
+Le rouge n'est jamais posé en texte sur un aplat marine, où il ne contraste qu'à
+2,5:1. Le token `accent-on-brand` (le rose du logo, 6,5:1) est prévu pour cet
+usage.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Les déclinaisons du logo sont dérivées des fichiers du client par
+`npm run marque:assets`, jamais redessinées à la main.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Visuels
+
+Les photographies actuelles proviennent de la banque d'images Pexels (licence
+commerciale, aucune image générée par IA) et sont référencées dans
+`src/lib/photos.ts`. **Les personnes qui y figurent ne sont pas des
+collaborateurs de LK-CORPORATE et les chantiers ne sont pas les siens** : les
+textes alternatifs décrivent donc la scène sans l'attribuer à l'entreprise.
+Elles ont vocation à être remplacées par les photos du client.
