@@ -43,7 +43,7 @@ administrateur. Chaque échec indique la commande qui le corrige.
 | `npm run build` | Build de production |
 | `npm start` | Sert le build (port 3000, surchargeable via `PORT`) |
 | `npm run lint` | ESLint |
-| `npm run db:migrer` | Crée et applique une migration — **développement uniquement** |
+| `npm run db:migrer` | Crée et applique une migration — **développement uniquement**, refusé si `ENVIRONNEMENT=production` |
 | `npm run db:deployer` | Applique les migrations en attente — **production** |
 | `npm run db:etat` | Affiche l'état des migrations (lecture seule) |
 | `npm run db:studio` | Prisma Studio |
@@ -53,6 +53,48 @@ administrateur. Chaque échec indique la commande qui le corrige.
 `postinstall` régénère le client Prisma à chaque installation : le dossier
 `src/generated/prisma` n'est pas versionné, et huit fichiers sources en
 dépendent.
+
+## Environnements
+
+Développement et production sont **deux projets Supabase distincts**. La
+séparation ne porte pas que sur la base : un projet Supabase fournit aussi le
+stockage et l'annuaire des comptes. Partager le projet reviendrait à ce qu'un
+essai en local crée un compte administrateur réel, écrase un média publié ou
+laisse des demandes de test dans la boîte du client.
+
+Un `.env` ne décrit qu'un seul environnement, celui de la machine où il est
+déposé. `ENVIRONNEMENT` (`developpement` ou `production`) désigne lequel : rien
+dans les URL Supabase ne permet de deviner à quel projet on parle, les deux se
+ressemblent trait pour trait.
+
+Cette variable n'est pas décorative. Elle fait **refuser** `npm run db:migrer`
+en production :
+
+```
+$ npm run db:migrer
+Refus d'exécuter « prisma migrate dev » : ENVIRONNEMENT=production.
+  cible : base aws-1-....pooler.supabase.com:5432, projet xxxx
+Pour appliquer les migrations en production :
+  npm run db:deployer
+```
+
+Les scripts qui écrivent (`setup:stockage`, `setup:admin`) et `verifier`
+annoncent leur cible avant d'agir : une erreur de `.env` se voit à l'écran,
+plutôt qu'après coup dans les données.
+
+### Créer le projet de production
+
+À faire une fois, depuis le tableau de bord Supabase :
+
+1. Créer un second projet, dans la région la plus proche des utilisateurs.
+2. Reporter ses identifiants dans le `.env` du serveur, avec
+   `ENVIRONNEMENT="production"` et `NEXT_PUBLIC_SITE_URL` sur le domaine réel.
+3. `npm run db:deployer` puis `npm run setup:stockage` pour créer le schéma et
+   les buckets.
+4. `npm run setup:admin` pour le premier compte, avec un mot de passe **différent
+   de celui de développement**.
+5. `npm run verifier` doit afficher `environnement : ⚠ PRODUCTION` et six
+   contrôles au vert.
 
 ## Déploiement
 

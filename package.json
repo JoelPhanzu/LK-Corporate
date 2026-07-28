@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:migrer": "prisma migrate dev",
+    "db:migrer": "node scripts/garde-developpement.mts \"prisma migrate dev\" && prisma migrate dev",
     "db:deployer": "prisma migrate deploy",
     "db:etat": "prisma migrate status",
     "db:studio": "prisma studio",

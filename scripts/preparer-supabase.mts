@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
+import { annoncerCible } from "./environnement.mts";
 
 /**
  * Crée les deux buckets de stockage attendus par l'application.
@@ -25,6 +26,8 @@ if (!url || !cleService) {
   );
   process.exit(1);
 }
+
+annoncerCible("Préparation des buckets de stockage.");
 
 const supabase = createClient(url, cleService, {
   auth: { persistSession: false, autoRefreshToken: false },

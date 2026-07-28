@@ -2,6 +2,7 @@ import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.ts";
+import { annoncerCible } from "./environnement.mts";
 
 /**
  * Contrôle de bout en bout de l'installation.
@@ -21,8 +22,13 @@ function noter(intitule: string, ok: boolean, detail: string) {
 }
 
 async function principal() {
+  // La cible est annoncée d'emblée : sans elle, un rapport « tout est en
+  // place » ne dit pas de quelle installation il parle.
+  annoncerCible("Vérification de l'installation.");
+
   // ---------------------------------------------------- variables d'environnement
   const requises = [
+    "ENVIRONNEMENT",
     "DATABASE_URL",
     "NEXT_PUBLIC_SUPABASE_URL",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",

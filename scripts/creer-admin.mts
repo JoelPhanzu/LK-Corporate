@@ -2,6 +2,7 @@ import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.ts";
+import { annoncerCible } from "./environnement.mts";
 
 /**
  * Crée le premier compte de l'espace admin.
@@ -45,6 +46,8 @@ if (!urlSupabase || !cleService || !urlBase) {
   );
   process.exit(1);
 }
+
+annoncerCible(`Création du compte administrateur ${email}.`);
 
 const supabase = createClient(urlSupabase, cleService, {
   auth: { persistSession: false, autoRefreshToken: false },
