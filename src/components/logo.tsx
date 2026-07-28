@@ -28,18 +28,48 @@ export function Logo({
   /** true lorsque le logo est posé sur un aplat bleu marine. */
   surMarque?: boolean;
 }) {
+  // Sur un aplat marine, le verrou blanc convient dans les deux thèmes : la
+  // teinte du bandeau ne varie pas. Ailleurs, la surface passe du blanc au
+  // marine avec le thème, et le lettrage doit suivre, sans quoi il disparaît
+  // dans le fond — c'était le cas de l'écran de connexion en mode sombre.
+  if (surMarque) {
+    return (
+      <Verrou
+        source="/marque/lk-corporate-inverse.png"
+        className={cn("inline-flex", className)}
+      />
+    );
+  }
+
+  return (
+    <>
+      <Verrou
+        source="/marque/lk-corporate.png"
+        className={cn("verrou-sur-clair", className)}
+      />
+      <Verrou
+        source="/marque/lk-corporate-inverse.png"
+        className={cn("verrou-sur-sombre", className)}
+      />
+    </>
+  );
+}
+
+function Verrou({
+  source,
+  className,
+}: {
+  source: string;
+  className?: string;
+}) {
   return (
     <Link
       href="/"
       aria-label="Lk-corporate, retour à l'accueil"
-      className={cn("inline-flex shrink-0 items-center", className)}
+      className={cn("shrink-0 items-center", className)}
     >
       <Image
-        src={
-          surMarque
-            ? "/marque/lk-corporate-inverse.png"
-            : "/marque/lk-corporate.png"
-        }
+        src={source}
         alt=""
         width={LARGEUR}
         height={HAUTEUR}

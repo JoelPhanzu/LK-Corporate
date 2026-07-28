@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { SelecteurTheme } from "@/components/theme/selecteur-theme";
 import { Container } from "@/components/ui/container";
 import { DOMAINES } from "@/lib/domaines";
 import { getCoordonnees } from "@/lib/contenu";
@@ -124,6 +125,13 @@ export async function Footer() {
               </ul>
             )}
           </div>
+        </div>
+
+        {/* Rangée des préférences d'affichage. Le choix vaut pour tout le
+            site, espace d'administration compris : il est conservé par le
+            navigateur, pas par la page. */}
+        <div className="flex flex-wrap items-start gap-x-12 gap-y-6 border-t border-white/10 py-7">
+          <SelecteurTheme />
         </div>
 
         <div className="flex flex-col gap-3 border-t border-white/10 py-6 text-xs sm:flex-row sm:items-center sm:justify-between">

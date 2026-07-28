@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
 import { SITE } from "@/lib/site";
+import { SCRIPT_THEME } from "@/lib/theme";
 import "./globals.css";
 
 /**
@@ -36,7 +37,19 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${archivo.variable} h-full`}>
+    // `data-theme` n'est volontairement PAS rendu côté serveur : le laisser
+    // absent permet à globals.css de retomber sur la préférence système pour
+    // les visiteurs sans JavaScript. Le script ci-dessous le pose aussitôt
+    // pour tous les autres, d'où `suppressHydrationWarning` : l'attribut aura
+    // déjà changé quand React hydratera.
+    <html
+      lang="fr"
+      className={`${archivo.variable} h-full`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_THEME }} />
+      </head>
       <body className="min-h-full font-sans flex flex-col">{children}</body>
     </html>
   );

@@ -91,8 +91,57 @@
   --focus-ring: #33497a;
 }
 
+/* ==========================================================================
+   Mode sombre
+
+   Le thème obéit à une préférence explicite (clair / sombre / appareil) posée
+   en `data-theme` sur <html> par le script de src/components/theme. Ce script
+   résout toujours « appareil » en une valeur concrète : dès qu'il s'exécute,
+   l'attribut est présent.
+
+   Les deux blocs qui suivent portent donc la MÊME palette, pour deux
+   situations distinctes :
+     1. `[data-theme="sombre"]` — cas normal, préférence résolue par le script ;
+     2. `:not([data-theme])` sous media query — repli sans JavaScript, où
+        l'attribut n'est jamais posé et où seule la préférence système existe.
+
+   ⚠ Toute modification de l'un doit être reportée sur l'autre.
+   ========================================================================== */
+
+:root[data-theme="sombre"] {
+  color-scheme: dark;
+
+  --surface: #0a1120;
+  --surface-sunken: #101a2e;
+  --surface-raised: #1b2a4a;
+  --surface-brand: #1b2a4a;
+  --surface-brand-deep: #101a2e;
+
+  --ink: #eceef2;
+  --ink-muted: #9aa3b2;
+  --ink-on-brand: #ffffff;
+  --ink-on-brand-muted: #c2c8d2;
+
+  /* L'aplat reste le rouge de marque : un accent désaturé en mode sombre
+     ferait perdre son identité au bouton principal. */
+  --accent: #bf3324;
+  --accent-hover: #d15f52;
+  --accent-ink: #ffffff;
+  /* En TEXTE sur fond sombre, le rouge plein tombe à 2.4:1. Le rose du logo
+     prend le relais, à 8.2:1 — même rôle que sur le bandeau marine. */
+  --accent-text: #dda197;
+  --accent-on-brand: #dda197;
+
+  --line: #26385f;
+  --line-strong: #33497a;
+
+  --focus-ring: #dda197;
+}
+
+/* Repli sans JavaScript. Copie conforme du bloc ci-dessus, commentaires en
+   moins : s'y reporter pour le détail des choix de contraste. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     color-scheme: dark;
 
     --surface: #0a1120;
@@ -106,13 +155,9 @@
     --ink-on-brand: #ffffff;
     --ink-on-brand-muted: #c2c8d2;
 
-    /* L'aplat reste le rouge de marque : un accent désaturé en mode sombre
-       ferait perdre son identité au bouton principal. */
     --accent: #bf3324;
     --accent-hover: #d15f52;
     --accent-ink: #ffffff;
-    /* En TEXTE sur fond sombre, le rouge plein tombe à 2.4:1. Le rose du logo
-       prend le relais, à 8.2:1 — même rôle que sur le bandeau marine. */
     --accent-text: #dda197;
     --accent-on-brand: #dda197;
 
@@ -182,6 +227,46 @@
 
   p {
     text-wrap: pretty;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Verrou de marque selon le thème
+
+   Le logo existe en deux lettrages, marine et blanc. Hors bandeau de marque,
+   la surface passe du blanc au marine avec le thème : le lettrage doit suivre,
+   sinon il se confond avec le fond. Les deux verrous sont rendus, un seul
+   s'affiche.
+
+   Ces règles sont hors `@layer` à dessein : elles l'emportent ainsi sur les
+   utilitaires Tailwind, qui sont eux dans une couche, sans dépendre de
+   l'ordre des déclarations.
+   -------------------------------------------------------------------------- */
+
+.verrou-sur-clair {
+  display: inline-flex;
+}
+
+.verrou-sur-sombre {
+  display: none;
+}
+
+:root[data-theme="sombre"] .verrou-sur-clair {
+  display: none;
+}
+
+:root[data-theme="sombre"] .verrou-sur-sombre {
+  display: inline-flex;
+}
+
+/* Repli sans JavaScript, comme pour la palette. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .verrou-sur-clair {
+    display: none;
+  }
+
+  :root:not([data-theme]) .verrou-sur-sombre {
+    display: inline-flex;
   }
 }
 
