@@ -1,26 +1,198 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================================================
+   Charte graphique LK-CORPORATE
+
+   Palette prélevée au pixel sur le logo définitif livré par le client
+   (« Images et logos ») : bleu marine du lettrage, rouge de la flèche, rose de
+   la contre-forme. Elle remplace le triptyque marine / or / argent esquissé au
+   cahier des charges §6, l'or ayant été écarté par le logo validé.
+
+     marine #1b2a4a — couleur de marque et encre principale
+     rouge  #bf3324 — accent unique
+     rose   #dda197 — accent de substitution sur les fonds marine
+
+   Stratégie inchangée : une échelle de marque brute (navy / brick / silver) +
+   des tokens sémantiques (surface, ink, accent, line). Les composants
+   n'utilisent QUE les tokens sémantiques, dont les valeurs basculent en mode
+   sombre. Cela évite de disséminer des variantes `dark:` dans chaque
+   utilitaire — et c'est ce qui a permis de rebrander le site sans toucher aux
+   quelque cinquante fichiers qui consomment l'accent.
+   ========================================================================== */
+
+@theme {
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+
+  /* Rayon unique sur tout le site. Volontairement faible : une entreprise de
+     génie civil doit paraître construite, pas arrondie comme une app grand
+     public. Boutons, cartes et champs partagent cette même valeur. */
+  --radius-brand: 3px;
+
+  /* Bleu marine — échelle calée sur le lettrage du logo (navy-800). */
+  --color-navy-950: #0a1120;
+  --color-navy-900: #101a2e;
+  --color-navy-800: #1b2a4a;
+  --color-navy-700: #26385f;
+  --color-navy-600: #33497a;
+  --color-navy-500: #4a629b;
+
+  /* Rouge brique — accent unique du site, calé sur la flèche (brick-500).
+     brick-300 est le rose de la contre-forme, seule valeur de la famille
+     lisible sur un aplat marine. */
+  --color-brick-700: #8f2419;
+  --color-brick-600: #a52c1e;
+  --color-brick-500: #bf3324;
+  --color-brick-400: #d15f52;
+  --color-brick-300: #dda197;
+  --color-brick-200: #f0d3ce;
+
+  /* Gris argenté — neutres, teintés froid pour s'accorder au bleu marine */
+  --color-silver-50: #f6f7f9;
+  --color-silver-100: #eceef2;
+  --color-silver-200: #dce0e7;
+  --color-silver-300: #c2c8d2;
+  --color-silver-400: #9aa3b2;
+  --color-silver-500: #737d8e;
+  --color-silver-600: #565f6e;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  color-scheme: light;
+
+  --surface: #ffffff;
+  --surface-sunken: #f6f7f9;
+  --surface-raised: #ffffff;
+  /* Bandeau de marque : en-tête, hero et pied de page. Exactement le marine du
+     lettrage, pour que le logo posé dessus se fonde sans liseré. */
+  --surface-brand: #1b2a4a;
+  --surface-brand-deep: #101a2e;
+
+  --ink: #1b2a4a;
+  --ink-muted: #565f6e;
+  --ink-on-brand: #ffffff;
+  --ink-on-brand-muted: #c2c8d2;
+
+  /* Rouge plein pour les aplats (boutons, filets). */
+  --accent: #bf3324;
+  --accent-hover: #a52c1e;
+  /* Encre posée SUR un aplat rouge : blanc, à 5.7:1 (AA). C'est l'inverse de
+     l'or, qui exigeait une encre marine — d'où la bascule de ce token. */
+  --accent-ink: #ffffff;
+  /* Rouge en tant que TEXTE sur fond clair : 5.7:1 sur blanc, il est donc
+     utilisé tel quel, sans l'assombrissement qu'imposait l'or. */
+  --accent-text: #bf3324;
+  /* Accent posé sur un aplat marine. Le rouge plein n'y atteint que 2.5:1 :
+     c'est le rose de la contre-forme du logo qui prend le relais, à 6.5:1. */
+  --accent-on-brand: #dda197;
+
+  --line: #dce0e7;
+  --line-strong: #c2c8d2;
+
+  --focus-ring: #33497a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: dark;
+
+    --surface: #0a1120;
+    --surface-sunken: #101a2e;
+    --surface-raised: #1b2a4a;
+    --surface-brand: #1b2a4a;
+    --surface-brand-deep: #101a2e;
+
+    --ink: #eceef2;
+    --ink-muted: #9aa3b2;
+    --ink-on-brand: #ffffff;
+    --ink-on-brand-muted: #c2c8d2;
+
+    /* L'aplat reste le rouge de marque : un accent désaturé en mode sombre
+       ferait perdre son identité au bouton principal. */
+    --accent: #bf3324;
+    --accent-hover: #d15f52;
+    --accent-ink: #ffffff;
+    /* En TEXTE sur fond sombre, le rouge plein tombe à 2.4:1. Le rose du logo
+       prend le relais, à 8.2:1 — même rôle que sur le bandeau marine. */
+    --accent-text: #dda197;
+    --accent-on-brand: #dda197;
+
+    --line: #26385f;
+    --line-strong: #33497a;
+
+    --focus-ring: #dda197;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Expose les tokens sémantiques comme utilitaires Tailwind. `inline` fait que
+   l'utilitaire pointe vers la variable CSS au lieu d'en figer la valeur, ce qui
+   permet la bascule clair/sombre sans recompilation. */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-brand: var(--surface-brand);
+  --color-surface-brand-deep: var(--surface-brand-deep);
+
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-on-brand: var(--ink-on-brand);
+  --color-ink-on-brand-muted: var(--ink-on-brand-muted);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-text: var(--accent-text);
+  --color-accent-on-brand: var(--accent-on-brand);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+}
+
+@layer base {
+  body {
+    background-color: var(--surface);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Anneau de focus visible et homogène : le site s'adresse aussi à des
+     institutions, la navigation clavier doit être irréprochable. */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Les aplats marine renversent le contraste : l'anneau sombre y disparaît.
+     Redéfinir la variable sur le conteneur suffit à ce que tout élément
+     focusable qu'il abrite hérite de l'anneau clair, sans marquer un à un les
+     liens de l'en-tête et du pied de page. */
+  .bg-surface-brand,
+  .bg-surface-brand-deep {
+    --focus-ring: #dda197;
+  }
+
+  /* Les titres portent l'identité : graisse et resserrement, pas de taille brute. */
+  h1,
+  h2,
+  h3 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* Toute animation du site se réduit à néant si l'utilisateur le demande. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

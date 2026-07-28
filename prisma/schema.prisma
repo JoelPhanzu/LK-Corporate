@@ -1,0 +1,332 @@
+// Schéma de données LK-CORPORATE
+//
+// Couvre le périmètre du cahier des charges §4 et §5 : leads, demandes de
+// devis et commandes, suivi logistique, chat, actualités, réalisations et
+// contenu éditable du site.
+//
+// L'URL de connexion n'est plus déclarée ici (Prisma 7) : elle est lue depuis
+// prisma.config.ts, qui la prend dans DATABASE_URL.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+
+  // Le client généré s'importe depuis Next.js ET depuis les scripts exécutés
+  // directement par Node. Node résout les modules ESM en exigeant l'extension :
+  // sans ces deux options, ses imports internes sans extension échouent hors
+  // bundler.
+  moduleFormat        = "esm"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------- énumérations
+
+/// Cycle de traitement d'une demande, côté équipe (cahier des charges §5).
+enum StatutDemande {
+  NOUVELLE
+  EN_COURS
+  TRAITEE
+  ARCHIVEE
+}
+
+/// Étapes de livraison visibles par le client (cahier des charges §4).
+/// Mises à jour manuellement par l'admin : pas de géolocalisation temps réel
+/// dans le périmètre initial.
+enum StatutLivraison {
+  RECUE
+  EN_PREPARATION
+  EN_TRANSIT
+  LIVREE
+}
+
+enum TypeDemande {
+  DEVIS
+  COMMANDE
+}
+
+enum RoleAdmin {
+  PROPRIETAIRE
+  ADMIN
+  AGENT
+}
+
+enum Expediteur {
+  VISITEUR
+  EQUIPE
+}
+
+// ------------------------------------------------------------------- personnes
+
+/// Compte de l'équipe LK-CORPORATE.
+/// `id` reprend l'identifiant Supabase Auth : l'authentification reste gérée
+/// par Supabase, cette table ne porte que le profil et le rôle applicatif.
+model UtilisateurAdmin {
+  id        String    @id
+  email     String    @unique
+  nom       String
+  role      RoleAdmin @default(AGENT)
+  actif     Boolean   @default(true)
+  creeLe    DateTime  @default(now())
+  modifieLe DateTime  @updatedAt
+
+  notes           NoteInterne[]
+  etapesLivraison EtapeLivraison[]
+  articles        Article[]
+  messages        Message[]
+
+  @@map("utilisateurs_admin")
+}
+
+/// Visiteur ayant laissé ses coordonnées via un formulaire.
+model Lead {
+  id         String   @id @default(cuid())
+  nom        String
+  email      String?
+  telephone  String?
+  entreprise String?
+  creeLe     DateTime @default(now())
+  modifieLe  DateTime @updatedAt
+
+  demandes      Demande[]
+  conversations Conversation[]
+
+  @@index([email])
+  @@index([creeLe])
+  @@map("leads")
+}
+
+// ------------------------------------------------------ demandes et logistique
+
+/// Demande de devis ou de commande déposée depuis le site vitrine.
+model Demande {
+  id String @id @default(cuid())
+
+  /// Code court communiqué au visiteur : il lui permet de suivre sa commande
+  /// sur /suivi sans avoir à créer de compte (cahier des charges §4).
+  reference String @unique
+
+  type TypeDemande @default(DEVIS)
+
+  /// Slug d'un des 9 domaines d'activité (voir src/lib/domaines.ts).
+  domaineSlug   String
+  description   String
+  budget        String?
+  delaiSouhaite String?
+
+  /// Renseignée pour les besoins de transport, d'approvisionnement ou de
+  /// livraison de matériaux.
+  adresseLivraison String?
+
+  statut StatutDemande @default(NOUVELLE)
+
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  pieces    PieceJointe[]
+  notes     NoteInterne[]
+  livraison Livraison?
+
+  creeLe    DateTime @default(now())
+  modifieLe DateTime @updatedAt
+
+  @@index([statut, creeLe])
+  @@index([domaineSlug])
+  @@map("demandes")
+}
+
+/// Document ou photo joint par le visiteur à sa demande.
+model PieceJointe {
+  id           String   @id @default(cuid())
+  demandeId    String
+  demande      Demande  @relation(fields: [demandeId], references: [id], onDelete: Cascade)
+  /// Chemin dans Supabase Storage.
+  chemin       String
+  nomFichier   String
+  contentType  String
+  tailleOctets Int
+  creeLe       DateTime @default(now())
+
+  @@index([demandeId])
+  @@map("pieces_jointes")
+}
+
+/// Note interne de l'équipe sur une demande. Jamais exposée au visiteur.
+model NoteInterne {
+  id        String            @id @default(cuid())
+  demandeId String
+  demande   Demande           @relation(fields: [demandeId], references: [id], onDelete: Cascade)
+  auteurId  String?
+  auteur    UtilisateurAdmin? @relation(fields: [auteurId], references: [id], onDelete: SetNull)
+  contenu   String
+  creeLe    DateTime          @default(now())
+
+  @@index([demandeId, creeLe])
+  @@map("notes_internes")
+}
+
+/// Volet logistique d'une demande. Séparé de `Demande` car le statut de
+/// traitement (interne) et le statut de livraison (visible du client) évoluent
+/// indépendamment.
+model Livraison {
+  id        String  @id @default(cuid())
+  demandeId String  @unique
+  demande   Demande @relation(fields: [demandeId], references: [id], onDelete: Cascade)
+
+  statut       StatutLivraison @default(RECUE)
+  transporteur String?
+  datePrevue   DateTime?
+  dateLivree   DateTime?
+
+  etapes EtapeLivraison[]
+
+  creeLe    DateTime @default(now())
+  modifieLe DateTime @updatedAt
+
+  @@index([statut])
+  @@map("livraisons")
+}
+
+/// Historique des changements de statut : alimente la frise de suivi affichée
+/// au client et trace qui a fait quoi côté équipe.
+model EtapeLivraison {
+  id          String            @id @default(cuid())
+  livraisonId String
+  livraison   Livraison         @relation(fields: [livraisonId], references: [id], onDelete: Cascade)
+  statut      StatutLivraison
+  /// Commentaire visible par le client, par exemple « départ du dépôt ».
+  commentaire String?
+  auteurId    String?
+  auteur      UtilisateurAdmin? @relation(fields: [auteurId], references: [id], onDelete: SetNull)
+  creeLe      DateTime          @default(now())
+
+  @@index([livraisonId, creeLe])
+  @@map("etapes_livraison")
+}
+
+// -------------------------------------------------------------------- échanges
+
+/// Fil de discussion entre un visiteur et l'équipe.
+model Conversation {
+  id String @id @default(cuid())
+
+  /// Jeton stocké côté visiteur : lui permet de retrouver son fil sans compte.
+  jetonVisiteur String @unique
+
+  leadId String?
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  /// Renseignés tant que le visiteur n'est pas rattaché à un lead.
+  visiteurNom   String?
+  visiteurEmail String?
+
+  ouverte          Boolean  @default(true)
+  dernierMessageLe DateTime @default(now())
+
+  messages Message[]
+
+  creeLe DateTime @default(now())
+
+  @@index([ouverte, dernierMessageLe])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  expediteur Expediteur
+  contenu    String
+
+  /// Renseigné quand l'expéditeur est un membre de l'équipe.
+  auteurId String?
+  auteur   UtilisateurAdmin? @relation(fields: [auteurId], references: [id], onDelete: SetNull)
+
+  /// Sert la pastille « messages non lus » du tableau de bord.
+  luParEquipe Boolean @default(false)
+
+  creeLe DateTime @default(now())
+
+  @@index([conversationId, creeLe])
+  @@index([luParEquipe])
+  @@map("messages")
+}
+
+/// Message déposé via le formulaire de contact, distinct d'une demande chiffrée.
+model MessageContact {
+  id        String   @id @default(cuid())
+  nom       String
+  email     String
+  telephone String?
+  sujet     String
+  message   String
+  traite    Boolean  @default(false)
+  creeLe    DateTime @default(now())
+
+  @@index([traite, creeLe])
+  @@map("messages_contact")
+}
+
+// -------------------------------------------------------------------- contenus
+
+/// Article du fil d'actualités, rédigé depuis l'espace admin.
+model Article {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  titre       String
+  chapo       String
+  contenu     String
+  imageChemin String?
+
+  publie   Boolean   @default(false)
+  publieLe DateTime?
+
+  auteurId String?
+  auteur   UtilisateurAdmin? @relation(fields: [auteurId], references: [id], onDelete: SetNull)
+
+  creeLe    DateTime @default(now())
+  modifieLe DateTime @updatedAt
+
+  @@index([publie, publieLe])
+  @@map("articles")
+}
+
+/// Projet livré, présenté dans la galerie « Nos réalisations ».
+model Realisation {
+  id           String  @id @default(cuid())
+  slug         String  @unique
+  titre        String
+  description  String
+  localisation String?
+  /// Slug d'un des 9 domaines d'activité.
+  domaineSlug  String
+
+  photoAvantChemin String?
+  photoApresChemin String?
+  /// Chemins Supabase Storage des visuels complémentaires.
+  photosChemins    String[]
+
+  publie Boolean @default(false)
+  ordre  Int     @default(0)
+
+  creeLe    DateTime @default(now())
+  modifieLe DateTime @updatedAt
+
+  @@index([publie, ordre])
+  @@index([domaineSlug])
+  @@map("realisations")
+}
+
+/// Fragments de contenu éditables depuis l'admin (textes de sections,
+/// coordonnées, liens réseaux sociaux) sans passer par le code.
+model ContenuSite {
+  cle       String   @id
+  valeur    Json
+  modifieLe DateTime @updatedAt
+
+  @@map("contenus_site")
+}

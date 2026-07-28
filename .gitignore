@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# Le gabarit, lui, est versionné : il documente les variables à renseigner.
+!.env.example
+
+# journal du serveur de développement
+dev.log
 
 # vercel
 .vercel
@@ -39,3 +44,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+
+# Outillage des assistants de code. Les trois dossiers vendorisent la même
+# documentation Prisma, régénérable à partir de skills-lock.json : la versionner
+# triplerait le nombre de fichiers du dépôt sans rien apporter au site.
+/.agents
+/.claude
+/.windsurf
