@@ -85,7 +85,9 @@ async function principal() {
       noter(
         "Migration appliquée",
         false,
-        "Tables absentes. Lancer : npx prisma migrate dev --name init",
+        "Tables absentes. En développement : npm run db:migrer. " +
+          "En production : npm run db:deployer (ne jamais lancer `migrate dev` " +
+          "sur une base de production, il peut proposer de la réinitialiser).",
       );
     }
   }

@@ -17,16 +17,19 @@ de gérer ces contenus et de suivre les demandes jusqu'à la livraison.
 | Base de données | PostgreSQL via Prisma |
 | Stockage et authentification | Supabase |
 
-## Démarrer
+## Démarrer en développement
 
 ```bash
 npm install
 cp .env.example .env    # puis renseigner les variables
-npm run db:migrer       # applique les migrations Prisma
+npm run db:migrer       # crée et applique les migrations (développement)
 npm run setup:stockage  # crée les buckets Supabase
 npm run setup:admin     # crée le premier compte administrateur
 npm run dev
 ```
+
+Pour une mise en ligne, voir [Déploiement](#déploiement) : la séquence diffère,
+et la commande de migration n'est pas la même.
 
 `npm run verifier` contrôle l'installation de bout en bout : variables
 d'environnement, connexion à la base, migrations, buckets, compte
@@ -38,11 +41,54 @@ administrateur. Chaque échec indique la commande qui le corrige.
 |---|---|
 | `npm run dev` | Serveur de développement |
 | `npm run build` | Build de production |
+| `npm start` | Sert le build (port 3000, surchargeable via `PORT`) |
 | `npm run lint` | ESLint |
-| `npm run db:migrer` | Migrations Prisma |
+| `npm run db:migrer` | Crée et applique une migration — **développement uniquement** |
+| `npm run db:deployer` | Applique les migrations en attente — **production** |
+| `npm run db:etat` | Affiche l'état des migrations (lecture seule) |
 | `npm run db:studio` | Prisma Studio |
 | `npm run verifier` | Contrôle de l'installation |
 | `npm run marque:assets` | Régénère les déclinaisons du logo |
+
+`postinstall` régénère le client Prisma à chaque installation : le dossier
+`src/generated/prisma` n'est pas versionné, et huit fichiers sources en
+dépendent.
+
+## Déploiement
+
+L'application n'est pas exportable en statique. Elle comporte des routes rendues
+à la demande, un middleware et des Server Actions : il lui faut un **processus
+Node.js persistant**, donc un VPS ou une offre avec support Node, jamais un
+hébergement mutualisé PHP.
+
+```bash
+npm ci                  # installe et régénère le client Prisma
+# renseigner .env AVANT de construire, voir l'avertissement ci-dessous
+npm run db:deployer     # applique les migrations en attente
+npm run build
+npm start
+```
+
+> **Renseigner `.env` avant `npm run build`.** Les variables préfixées
+> `NEXT_PUBLIC_` (`NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`,
+> `NEXT_PUBLIC_SUPABASE_ANON_KEY`) sont figées dans le bundle au moment de la
+> compilation. Construire sans elles produit un site qui démarre sans erreur
+> mais dont le chat et l'authentification côté navigateur sont inertes, avec des
+> URL absolues fausses dans les métadonnées. Les trois autres variables ne sont
+> lues qu'à l'exécution.
+
+`db:deployer` (`prisma migrate deploy`) est la seule commande de migration
+admise en production : elle applique les migrations en attente, sans rien
+générer ni proposer, et ne fait rien si la base est déjà à jour. **Ne jamais
+lancer `db:migrer` (`prisma migrate dev`) sur une base de production** : cette
+commande est interactive et peut proposer de réinitialiser la base.
+
+Les migrations passent par `DIRECT_URL` (port 5432) et non par le pooler de
+transactions (port 6543), qui refuse les commandes DDL. `prisma.config.ts` s'en
+charge déjà.
+
+Prévoir enfin un reverse proxy vers le port Node, et l'accès sortant HTTPS vers
+`images.pexels.com` et `*.supabase.co`.
 
 ## Organisation
 

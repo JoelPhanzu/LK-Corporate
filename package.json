@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:migrer": "prisma migrate dev",
+    "db:deployer": "prisma migrate deploy",
+    "db:etat": "prisma migrate status",
     "db:studio": "prisma studio",
     "setup:stockage": "node scripts/preparer-supabase.mts",
     "setup:admin": "node scripts/creer-admin.mts",
