@@ -82,19 +82,35 @@ Les scripts qui écrivent (`setup:stockage`, `setup:admin`) et `verifier`
 annoncent leur cible avant d'agir : une erreur de `.env` se voit à l'écran,
 plutôt qu'après coup dans les données.
 
-### Créer le projet de production
+### Répartition retenue
+
+Le projet Supabase d'origine **est la production**. C'est lui qui porte le
+domaine public et les données réelles ; son `.env` vit sur le serveur.
+
+Le projet de **développement est un second projet, à créer**, dont les
+identifiants remplacent ceux du `.env` de chaque poste de travail.
+
+Tant que ce second projet n'existe pas, le `.env` local pointe sur la
+production : il doit donc porter `ENVIRONNEMENT="production"`, faute de quoi le
+garde-fou laisserait passer `db:migrer` sur les données réelles.
+
+### Créer le projet de développement
 
 À faire une fois, depuis le tableau de bord Supabase :
 
-1. Créer un second projet, dans la région la plus proche des utilisateurs.
-2. Reporter ses identifiants dans le `.env` du serveur, avec
-   `ENVIRONNEMENT="production"` et `NEXT_PUBLIC_SITE_URL` sur le domaine réel.
-3. `npm run db:deployer` puis `npm run setup:stockage` pour créer le schéma et
+1. Créer un second projet.
+2. Reporter ses identifiants dans le `.env` **local**, avec
+   `ENVIRONNEMENT="developpement"` et
+   `NEXT_PUBLIC_SITE_URL="http://localhost:3000"`.
+3. `npm run db:migrer` puis `npm run setup:stockage` pour créer le schéma et
    les buckets.
-4. `npm run setup:admin` pour le premier compte, avec un mot de passe **différent
-   de celui de développement**.
-5. `npm run verifier` doit afficher `environnement : ⚠ PRODUCTION` et six
+4. `npm run setup:admin` pour un compte de travail, avec un mot de passe
+   **différent de celui de production**.
+5. `npm run verifier` doit afficher `environnement : développement` et six
    contrôles au vert.
+
+Le `.env` du serveur, lui, conserve les identifiants du projet d'origine, avec
+`ENVIRONNEMENT="production"` et `NEXT_PUBLIC_SITE_URL` sur le domaine réel.
 
 ## Déploiement
 
