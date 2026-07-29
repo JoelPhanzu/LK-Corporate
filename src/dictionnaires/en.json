@@ -42,6 +42,48 @@
     "themeAppareil": "Device",
     "langue": "Language"
   },
+  "accueil": {
+    "heroTitre": "Build, equip, deliver.",
+    "heroTexte": "Civil engineering, public works, solar energy and logistics for individuals, businesses and institutions.",
+    "servicesTitre": "Nine areas, a single point of contact",
+    "servicesTexte": "From structural work to procurement, LK-CORPORATE covers a project end to end, without juggling several contractors.",
+    "servicesDecouvrir": "Explore this area",
+    "valeursTitre": "What our clients judge us on",
+    "valeursTexte": "LK-CORPORATE works with individuals, businesses and institutions. Three standards apply to all of them.",
+    "valeursLien": "More about the company",
+    "valeurs": [
+      {
+        "titre": "Excellence",
+        "texte": "Work carried out to professional standards, inspected at every stage of the site."
+      },
+      {
+        "titre": "Integrity",
+        "texte": "Commitments kept on deadlines, quantities and quoted prices."
+      },
+      {
+        "titre": "Client satisfaction",
+        "texte": "One contact, reachable, who reports on progress without having to be chased."
+      }
+    ],
+    "realisationsTitre": "Recent projects",
+    "realisationsLien": "All projects",
+    "realisationsVideTitre": "The first projects will be published here",
+    "realisationsVideTexte": "Each project is added from the admin area, with its before and after photos, description and location.",
+    "ctaTitre": "A project, or a need for materials or transport?",
+    "ctaTexte": "Describe your needs in a few lines, attach your documents or photos, and receive a costed proposal."
+  },
+  "services": {
+    "metaTitre": "Our services",
+    "metaDescription": "The nine areas LK-CORPORATE works in: civil engineering, renovation, public works, materials, solar energy, cleaning, logistics, land and general trade.",
+    "titre": "Nine areas of expertise",
+    "chapo": "Building and civil engineering, supply, energy, cleaning and logistics. Each area can be commissioned on its own or combined with the others within a single project.",
+    "ctaTitre": "Does your project span several areas?",
+    "ctaTexte": "Describe your whole requirement in a single request. We will come back to you with a costed proposal.",
+    "priseEnCharge": "What we take care of",
+    "besoinTitre": "A need in this area?",
+    "besoinTexte": "The form opens with this area already selected. You can attach your plans, photos or documents.",
+    "autresDomaines": "Other areas"
+  },
   "erreur404": {
     "etiquette": "Error 404",
     "titre": "This page does not exist",

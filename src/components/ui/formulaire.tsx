@@ -27,6 +27,7 @@ export function Champ({
   aide,
   erreur,
   obligatoire,
+  libelleFacultatif = "(facultatif)",
   children,
 }: {
   htmlFor: string;
@@ -34,6 +35,11 @@ export function Champ({
   aide?: string;
   erreur?: string;
   obligatoire?: boolean;
+  /**
+   * Traduction de la mention « facultatif ». Le défaut français sert l'espace
+   * d'administration, qui n'est pas traduit ; le site vitrine la fournit.
+   */
+  libelleFacultatif?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -46,7 +52,9 @@ export function Champ({
           </span>
         )}
         {!obligatoire && (
-          <span className="ml-2 font-normal text-ink-muted">(facultatif)</span>
+          <span className="ml-2 font-normal text-ink-muted">
+            {libelleFacultatif}
+          </span>
         )}
       </label>
       {aide && (

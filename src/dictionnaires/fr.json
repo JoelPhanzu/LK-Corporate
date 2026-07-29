@@ -42,6 +42,48 @@
     "themeAppareil": "Appareil",
     "langue": "Langue"
   },
+  "accueil": {
+    "heroTitre": "Construire, équiper, livrer.",
+    "heroTexte": "Génie civil, travaux publics, énergie solaire et logistique pour les particuliers, les entreprises et les institutions.",
+    "servicesTitre": "Neuf domaines, un seul interlocuteur",
+    "servicesTexte": "Du gros œuvre à l'approvisionnement, LK-CORPORATE couvre la chaîne complète d'un projet sans multiplier les prestataires.",
+    "servicesDecouvrir": "Découvrir ce domaine",
+    "valeursTitre": "Ce sur quoi nos clients nous jugent",
+    "valeursTexte": "LK-CORPORATE intervient auprès de particuliers, d'entreprises et d'institutions. Trois exigences valent pour tous.",
+    "valeursLien": "En savoir plus sur l'entreprise",
+    "valeurs": [
+      {
+        "titre": "Excellence",
+        "texte": "Des ouvrages exécutés dans les règles de l'art, contrôlés à chaque étape du chantier."
+      },
+      {
+        "titre": "Intégrité",
+        "texte": "Des engagements tenus sur les délais, les quantités et les prix annoncés."
+      },
+      {
+        "titre": "Satisfaction client",
+        "texte": "Un interlocuteur unique, joignable, qui rend compte de l'avancement sans qu'on ait à le relancer."
+      }
+    ],
+    "realisationsTitre": "Réalisations récentes",
+    "realisationsLien": "Toutes les réalisations",
+    "realisationsVideTitre": "Les premières réalisations seront publiées ici",
+    "realisationsVideTexte": "Chaque projet est ajouté depuis l'espace admin, avec ses photos avant et après, sa description et sa localisation.",
+    "ctaTitre": "Un projet, un besoin de matériaux ou de transport ?",
+    "ctaTexte": "Décrivez votre besoin en quelques lignes, joignez vos documents ou photos, et recevez une proposition chiffrée."
+  },
+  "services": {
+    "metaTitre": "Nos services",
+    "metaDescription": "Les neuf domaines d'intervention de LK-CORPORATE : génie civil, rénovation, travaux publics, matériaux, énergie solaire, nettoyage, logistique, foncier et commerce général.",
+    "titre": "Neuf domaines d'intervention",
+    "chapo": "Bâtiment et génie civil, fourniture, énergie, propreté et logistique. Chaque domaine peut être commandé seul ou combiné aux autres au sein d'un même projet.",
+    "ctaTitre": "Votre projet couvre plusieurs domaines ?",
+    "ctaTexte": "Décrivez l'ensemble de votre besoin dans une seule demande. Nous revenons vers vous avec une proposition chiffrée.",
+    "priseEnCharge": "Ce que nous prenons en charge",
+    "besoinTitre": "Un besoin sur ce domaine ?",
+    "besoinTexte": "Le formulaire arrive avec ce domaine déjà sélectionné. Vous pouvez y joindre vos plans, photos ou documents.",
+    "autresDomaines": "Autres domaines"
+  },
   "erreur404": {
     "etiquette": "Erreur 404",
     "titre": "Cette page n'existe pas",

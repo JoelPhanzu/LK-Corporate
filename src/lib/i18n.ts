@@ -21,6 +21,12 @@ export const NOMS_LANGUES: Record<Langue, string> = {
   en: "English",
 };
 
+/** Codes courts, pour le raccourci de l'en-tête où la place manque. */
+export const CODES_LANGUES: Record<Langue, string> = {
+  fr: "FR",
+  en: "EN",
+};
+
 /** Code complet pour l'attribut `lang` et les balises hreflang. */
 export const ETIQUETTES_HREFLANG: Record<Langue, string> = {
   fr: "fr",
@@ -52,6 +58,25 @@ export function cheminSansLangue(pathname: string): string {
     if (pathname.startsWith(`/${langue}/`)) return pathname.slice(langue.length + 1);
   }
   return pathname;
+}
+
+/**
+ * Bloc `alternates` des métadonnées d'une page.
+ *
+ * Déclare la canonique de la page ET ses équivalents dans l'autre langue.
+ * Sans ces réciproques, Google traite les deux versions comme des doublons
+ * plutôt que comme des traductions, et n'en indexe qu'une.
+ */
+export function alternances(langue: Langue, cheminNu: string) {
+  return {
+    canonical: chemin(langue, cheminNu),
+    languages: Object.fromEntries(
+      LANGUES.map((autre) => [
+        ETIQUETTES_HREFLANG[autre],
+        chemin(autre, cheminNu),
+      ]),
+    ),
+  };
 }
 
 /**

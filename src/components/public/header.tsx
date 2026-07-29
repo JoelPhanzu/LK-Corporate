@@ -5,6 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ListIcon, XIcon } from "@phosphor-icons/react";
 import { Logo } from "@/components/logo";
+import { SelecteurLangue } from "@/components/preferences/selecteur-langue";
+import {
+  SelecteurTheme,
+  type LibellesTheme,
+} from "@/components/theme/selecteur-theme";
 import { LienBouton } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { chemin, type Langue } from "@/lib/i18n";
@@ -28,6 +33,7 @@ export function Header({
   langue,
   entrees,
   libelles,
+  preferences,
 }: {
   langue: Langue;
   entrees: EntreeNav[];
@@ -37,6 +43,10 @@ export function Header({
     ouvrirMenu: string;
     fermerMenu: string;
     devis: string;
+  };
+  preferences: {
+    langue: string;
+    theme: LibellesTheme;
   };
 }) {
   const pathname = usePathname();
@@ -74,7 +84,7 @@ export function Header({
         <div className="flex h-[72px] items-center justify-between gap-6">
           <Logo surMarque langue={langue} />
 
-          <nav aria-label={libelles.principale} className="hidden lg:block">
+          <nav aria-label={libelles.principale} className="hidden xl:block">
             <ul className="flex items-center gap-7">
               {entrees
                 .filter((item) => item.href !== "/")
@@ -98,6 +108,20 @@ export function Header({
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* Raccourcis de préférences. Ils n'apparaissent qu'à partir de
+                `xl` : avec eux, le verrou, cinq entrées de menu et le bouton
+                d'appel ne tiennent plus sur une ligne à 1024px. En dessous,
+                c'est le panneau mobile qui les porte, d'où le même seuil sur
+                la navigation et sur le bouton d'ouverture. */}
+            <div className="hidden items-center gap-2 xl:flex">
+              <SelecteurLangue
+                langue={langue}
+                titre={preferences.langue}
+                compact
+              />
+              <SelecteurTheme libelles={preferences.theme} compact />
+            </div>
+
             <LienBouton
               href={chemin(langue, "/devis")}
               className="hidden sm:inline-flex"
@@ -111,7 +135,7 @@ export function Header({
               aria-expanded={ouvert}
               aria-controls="menu-mobile"
               aria-label={ouvert ? libelles.fermerMenu : libelles.ouvrirMenu}
-              className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-brand text-ink-on-brand hover:bg-white/10 transition-colors"
+              className="xl:hidden inline-flex h-11 w-11 items-center justify-center rounded-brand text-ink-on-brand hover:bg-white/10 transition-colors"
             >
               {ouvert ? (
                 <XIcon size={24} weight="bold" />
@@ -126,7 +150,7 @@ export function Header({
       {ouvert && (
         <div
           id="menu-mobile"
-          className="lg:hidden border-t border-white/10 bg-surface-brand-deep"
+          className="xl:hidden border-t border-white/10 bg-surface-brand-deep"
         >
           <Container>
             <nav aria-label={libelles.principaleMobile} className="py-4">
@@ -149,6 +173,17 @@ export function Header({
                   </li>
                 ))}
               </ul>
+              {/* Raccourcis juste sous la liste du menu, avant l'appel à
+                  l'action : ils relèvent du réglage, pas de la navigation. */}
+              <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-4">
+                <SelecteurLangue
+                  langue={langue}
+                  titre={preferences.langue}
+                  compact
+                />
+                <SelecteurTheme libelles={preferences.theme} compact />
+              </div>
+
               <LienBouton
                 href={chemin(langue, "/devis")}
                 onClick={fermer}

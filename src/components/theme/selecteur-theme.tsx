@@ -35,9 +35,15 @@ export type LibellesTheme = {
  */
 export function SelecteurTheme({
   libelles,
+  compact = false,
   className,
 }: {
   libelles: LibellesTheme;
+  /**
+   * Version réduite de l'en-tête : icônes seules, l'intitulé passant en
+   * étiquette accessible. La place manque sur la barre de menu.
+   */
+  compact?: boolean;
   className?: string;
 }) {
   const options: { valeur: PreferenceTheme; label: string }[] = [
@@ -83,11 +89,23 @@ export function SelecteurTheme({
 
   return (
     <fieldset className={cn("min-w-0", className)}>
-      <legend className="text-sm font-semibold text-ink-on-brand">
+      <legend
+        className={cn(
+          "text-sm font-semibold text-ink-on-brand",
+          // En version réduite l'intitulé reste annoncé, mais n'occupe plus
+          // de place : la barre de menu doit tenir sur une ligne.
+          compact && "sr-only",
+        )}
+      >
         {libelles.titre}
       </legend>
 
-      <div className="mt-3 inline-flex rounded-brand border border-white/15 p-0.5">
+      <div
+        className={cn(
+          "inline-flex rounded-brand border border-white/15 p-0.5",
+          !compact && "mt-3",
+        )}
+      >
         {options.map(({ valeur, label }) => {
           const actif = preference === valeur;
           const Icone = ICONES[valeur];
@@ -95,9 +113,11 @@ export function SelecteurTheme({
           return (
             <label
               key={valeur}
+              title={compact ? label : undefined}
               className={cn(
-                "inline-flex cursor-pointer items-center gap-1.5 rounded-brand px-2.5 py-1.5",
+                "inline-flex cursor-pointer items-center gap-1.5 rounded-brand",
                 "text-xs font-medium transition-colors",
+                compact ? "px-2 py-1.5" : "px-2.5 py-1.5",
                 // `focus-within` porte l'anneau : le bouton radio lui-même est
                 // masqué visuellement mais reste la cible du clavier.
                 "focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--focus-ring)]",
@@ -115,7 +135,7 @@ export function SelecteurTheme({
                 className="sr-only"
               />
               <Icone size={15} weight={actif ? "fill" : "regular"} aria-hidden />
-              {label}
+              <span className={cn(compact && "sr-only")}>{label}</span>
             </label>
           );
         })}

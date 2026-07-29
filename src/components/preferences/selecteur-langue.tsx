@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  CODES_LANGUES,
   ETIQUETTES_HREFLANG,
   LANGUES,
   NOMS_LANGUES,
@@ -25,18 +26,31 @@ import { cn } from "@/lib/utils";
 export function SelecteurLangue({
   langue,
   titre,
+  compact = false,
 }: {
   langue: Langue;
   titre: string;
+  /**
+   * Version réduite de l'en-tête : codes à deux lettres et pas d'intitulé,
+   * pour tenir sur la barre de menu sans la faire passer sur deux lignes.
+   */
+  compact?: boolean;
 }) {
   const pathname = usePathname();
   const cheminNu = cheminSansLangue(pathname);
 
   return (
     <nav aria-label={titre} className="min-w-0">
-      <p className="text-sm font-semibold text-ink-on-brand">{titre}</p>
+      {!compact && (
+        <p className="text-sm font-semibold text-ink-on-brand">{titre}</p>
+      )}
 
-      <ul className="mt-3 inline-flex rounded-brand border border-white/15 p-0.5">
+      <ul
+        className={cn(
+          "inline-flex rounded-brand border border-white/15 p-0.5",
+          !compact && "mt-3",
+        )}
+      >
         {LANGUES.map((valeur) => {
           const actif = valeur === langue;
 
@@ -49,14 +63,17 @@ export function SelecteurLangue({
                 // n'indique la langue active à un lecteur d'écran.
                 aria-current={actif ? "true" : undefined}
                 className={cn(
-                  "inline-flex items-center rounded-brand px-3 py-1.5",
-                  "text-xs font-medium transition-colors",
+                  "inline-flex items-center rounded-brand text-xs font-medium transition-colors",
+                  compact ? "px-2 py-1" : "px-3 py-1.5",
                   actif
                     ? "bg-white/15 text-ink-on-brand"
                     : "text-ink-on-brand-muted hover:text-ink-on-brand",
                 )}
               >
-                {NOMS_LANGUES[valeur]}
+                {compact ? CODES_LANGUES[valeur] : NOMS_LANGUES[valeur]}
+                {compact && (
+                  <span className="sr-only"> : {NOMS_LANGUES[valeur]}</span>
+                )}
               </Link>
             </li>
           );

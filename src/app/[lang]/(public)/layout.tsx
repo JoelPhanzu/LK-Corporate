@@ -35,6 +35,15 @@ export default async function LayoutPublic(props: LayoutProps<"/[lang]">) {
           fermerMenu: dico.nav.fermerMenu,
           devis: dico.commun.demanderDevis,
         }}
+        preferences={{
+          langue: dico.preferences.langue,
+          theme: {
+            titre: dico.preferences.theme,
+            clair: dico.preferences.themeClair,
+            sombre: dico.preferences.themeSombre,
+            appareil: dico.preferences.themeAppareil,
+          },
+        }}
       />
 
       <main id="contenu" className="flex-1">

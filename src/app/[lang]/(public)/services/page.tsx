@@ -1,34 +1,49 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { EnTetePage } from "@/components/public/en-tete-page";
 import { LienBouton } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { DOMAINES } from "@/lib/domaines";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import { domaines } from "@/lib/domaines-en";
+import { alternances, chemin, estLangue } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "Nos services",
-  description:
-    "Les neuf domaines d'intervention de LK-CORPORATE : génie civil, rénovation, travaux publics, matériaux, énergie solaire, nettoyage, logistique, foncier et commerce général.",
-};
+export async function generateMetadata(
+  props: PageProps<"/[lang]/services">,
+): Promise<Metadata> {
+  const { lang } = await props.params;
+  if (!estLangue(lang)) return {};
 
-export default function PageServices() {
+  const dico = getDictionnaire(lang);
+  return {
+    title: dico.services.metaTitre,
+    description: dico.services.metaDescription,
+    alternates: alternances(lang, "/services"),
+  };
+}
+
+export default async function PageServices(
+  props: PageProps<"/[lang]/services">,
+) {
+  const { lang } = await props.params;
+  if (!estLangue(lang)) notFound();
+
+  const dico = getDictionnaire(lang);
+
   return (
     <>
-      <EnTetePage
-        titre="Neuf domaines d'intervention"
-        chapo="Bâtiment et génie civil, fourniture, énergie, propreté et logistique. Chaque domaine peut être commandé seul ou combiné aux autres au sein d'un même projet."
-      />
+      <EnTetePage titre={dico.services.titre} chapo={dico.services.chapo} />
 
       <section className="py-16 md:py-24">
         <Container>
           {/* Grille filetée plutôt que cartes : neuf entrées, neuf cellules,
               aucune case vide, et une densité lisible dès le mobile. */}
           <ul className="grid border-t border-line sm:grid-cols-2 sm:gap-x-10 lg:grid-cols-3 lg:gap-x-12">
-            {DOMAINES.map((domaine) => (
+            {domaines(lang).map((domaine) => (
               <li key={domaine.slug} className="border-b border-line">
                 <Link
-                  href={`/services/${domaine.slug}`}
+                  href={chemin(lang, `/services/${domaine.slug}`)}
                   className="group block h-full py-7 transition-colors hover:text-accent-text"
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -56,16 +71,13 @@ export default function PageServices() {
         <Container>
           <div className="flex flex-col items-start gap-6 py-14 md:flex-row md:items-center md:justify-between md:py-16">
             <div>
-              <h2 className="text-2xl md:text-3xl">
-                Votre projet couvre plusieurs domaines ?
-              </h2>
+              <h2 className="text-2xl md:text-3xl">{dico.services.ctaTitre}</h2>
               <p className="mt-3 max-w-[54ch] leading-relaxed text-ink-on-brand-muted">
-                Décrivez l&apos;ensemble de votre besoin dans une seule demande.
-                Nous revenons vers vous avec une proposition chiffrée.
+                {dico.services.ctaTexte}
               </p>
             </div>
-            <LienBouton href="/devis" className="shrink-0">
-              Demander un devis
+            <LienBouton href={chemin(lang, "/devis")} className="shrink-0">
+              {dico.commun.demanderDevis}
             </LienBouton>
           </div>
         </Container>
