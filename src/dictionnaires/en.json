@@ -207,6 +207,23 @@
     "retour": "All news",
     "publieLe": "Published on {date}"
   },
+  "suivi": {
+    "metaTitre": "Track an order",
+    "metaDescription": "Track the status of your LK-CORPORATE order or delivery using your reference.",
+    "titre": "Track an order",
+    "chapo": "Enter the reference you received with your request. No account is needed.",
+    "champReference": "Tracking reference",
+    "aideReference": "Format “LK-XXXXXX”, sent to you when your request was submitted.",
+    "rechercher": "Search",
+    "introuvableTitre": "No request found under this reference",
+    "introuvableTexte": "Check what you typed, in particular the hyphen. If in doubt, contact us and mention the date of your request.",
+    "indisponibleTitre": "Tracking temporarily unavailable",
+    "indisponibleTexte": "The tracking service is not responding at the moment. Please try again in a few minutes.",
+    "referenceLabel": "Reference",
+    "demandeDu": "{domaine}, requested on {date}",
+    "historique": "History",
+    "majStatut": "Status updated."
+  },
   "erreur404": {
     "etiquette": "Error 404",
     "titre": "This page does not exist",

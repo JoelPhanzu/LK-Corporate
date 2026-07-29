@@ -1,25 +1,30 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr";
 import { EnTetePage } from "@/components/public/en-tete-page";
 import { FriseLivraison } from "@/components/public/frise-livraison";
 import { Bouton } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Champ, Input } from "@/components/ui/formulaire";
-import { getDomaine } from "@/lib/domaines";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import { domaine as getDomaine } from "@/lib/domaines-en";
+import { LOCALES_INTL, estLangue, type Langue } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 
-export const metadata: Metadata = {
-  title: "Suivre une commande",
-  description:
-    "Suivez l'état de votre commande ou de votre livraison LK-CORPORATE à l'aide de votre référence.",
-  // Page de consultation personnelle : sans intérêt pour les moteurs.
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata(
+  props: PageProps<"/[lang]/suivi">,
+): Promise<Metadata> {
+  const { lang } = await props.params;
+  if (!estLangue(lang)) return {};
 
-const dateFr = new Intl.DateTimeFormat("fr-FR", {
-  dateStyle: "long",
-  timeStyle: "short",
-});
+  const dico = getDictionnaire(lang);
+  return {
+    title: dico.suivi.metaTitre,
+    description: dico.suivi.metaDescription,
+    // Page de consultation personnelle : sans intérêt pour les moteurs.
+    robots: { index: false, follow: true },
+  };
+}
 
 type Resultat =
   | { type: "aucune-recherche" }
@@ -34,7 +39,7 @@ type Resultat =
       etapes: { statut: string; commentaire: string | null; creeLe: Date }[];
     };
 
-async function chercher(reference: string): Promise<Resultat> {
+async function chercher(reference: string, langue: Langue): Promise<Resultat> {
   if (!reference) return { type: "aucune-recherche" };
 
   try {
@@ -64,7 +69,7 @@ async function chercher(reference: string): Promise<Resultat> {
     return {
       type: "trouvee",
       reference: demande.reference,
-      domaine: getDomaine(demande.domaineSlug)?.nom ?? demande.domaineSlug,
+      domaine: getDomaine(demande.domaineSlug, langue)?.nom ?? demande.domaineSlug,
       creeLe: demande.creeLe,
       statut: demande.livraison?.statut ?? "RECUE",
       etapes: demande.livraison?.etapes ?? [],
@@ -76,15 +81,24 @@ async function chercher(reference: string): Promise<Resultat> {
 }
 
 export default async function PageSuivi(props: PageProps<"/[lang]/suivi">) {
+  const { lang } = await props.params;
+  if (!estLangue(lang)) notFound();
+
+  const dico = getDictionnaire(lang);
+  const dateLocale = new Intl.DateTimeFormat(LOCALES_INTL[lang], {
+    dateStyle: "long",
+    timeStyle: "short",
+  });
+
   const { reference } = await props.searchParams;
   const saisie = typeof reference === "string" ? reference.trim().toUpperCase() : "";
-  const resultat = await chercher(saisie);
+  const resultat = await chercher(saisie, lang);
 
   return (
     <>
       <EnTetePage
-        titre="Suivre une commande"
-        chapo="Saisissez la référence reçue lors de votre demande. Aucun compte n'est nécessaire."
+        titre={dico.suivi.titre}
+        chapo={dico.suivi.chapo}
       />
 
       <section className="py-16 md:py-24">
@@ -96,8 +110,8 @@ export default async function PageSuivi(props: PageProps<"/[lang]/suivi">) {
               <div className="flex-1">
                 <Champ
                   htmlFor="reference"
-                  label="Référence de suivi"
-                  aide="Format « LK-XXXXXX », communiqué à l'envoi de votre demande."
+                  label={dico.suivi.champReference}
+                  aide={dico.suivi.aideReference}
                   obligatoire
                 >
                   <Input
@@ -114,7 +128,7 @@ export default async function PageSuivi(props: PageProps<"/[lang]/suivi">) {
               </div>
               <Bouton type="submit" className="sm:mb-0">
                 <MagnifyingGlassIcon size={18} weight="bold" aria-hidden />
-                Rechercher
+                {dico.suivi.rechercher}
               </Bouton>
             </form>
 
@@ -124,11 +138,9 @@ export default async function PageSuivi(props: PageProps<"/[lang]/suivi">) {
                   role="status"
                   className="rounded-brand border border-line bg-surface-sunken p-6"
                 >
-                  <p className="font-semibold">Aucune demande sous cette référence</p>
+                  <p className="font-semibold">{dico.suivi.introuvableTitre}</p>
                   <p className="mt-2 leading-relaxed text-ink-muted">
-                    Vérifiez la saisie, en particulier le tiret. Si le doute
-                    persiste, contactez-nous en précisant la date de votre
-                    demande.
+                    {dico.suivi.introuvableTexte}
                   </p>
                 </div>
               )}
@@ -138,10 +150,9 @@ export default async function PageSuivi(props: PageProps<"/[lang]/suivi">) {
                   role="alert"
                   className="rounded-brand border border-line bg-surface-sunken p-6"
                 >
-                  <p className="font-semibold">Suivi momentanément indisponible</p>
+                  <p className="font-semibold">{dico.suivi.indisponibleTitre}</p>
                   <p className="mt-2 leading-relaxed text-ink-muted">
-                    Le service de suivi ne répond pas pour le moment. Réessayez
-                    dans quelques minutes.
+                    {dico.suivi.indisponibleTexte}
                   </p>
                 </div>
               )}
@@ -149,24 +160,25 @@ export default async function PageSuivi(props: PageProps<"/[lang]/suivi">) {
               {resultat.type === "trouvee" && (
                 <article className="rounded-brand border border-line p-6 md:p-8">
                   <p className="text-sm font-semibold text-ink-muted">
-                    Référence
+                    {dico.suivi.referenceLabel}
                   </p>
                   <h2 className="mt-1 font-mono text-2xl font-bold">
                     {resultat.reference}
                   </h2>
                   <p className="mt-2 text-sm text-ink-muted">
-                    {resultat.domaine}, demande du{" "}
-                    {dateFr.format(resultat.creeLe)}
+                    {dico.suivi.demandeDu
+                      .replace("{domaine}", resultat.domaine)
+                      .replace("{date}", dateLocale.format(resultat.creeLe))}
                   </p>
 
                   <div className="mt-8 border-t border-line pt-8">
-                    <FriseLivraison statut={resultat.statut} />
+                    <FriseLivraison statut={resultat.statut} langue={lang} />
                   </div>
 
                   {resultat.etapes.length > 0 && (
                     <div className="mt-8 border-t border-line pt-6">
                       <h3 className="text-sm font-semibold text-ink-muted">
-                        Historique
+                        {dico.suivi.historique}
                       </h3>
                       <ol className="mt-4 space-y-4">
                         {resultat.etapes.map((etape, index) => (
@@ -175,10 +187,10 @@ export default async function PageSuivi(props: PageProps<"/[lang]/suivi">) {
                               dateTime={etape.creeLe.toISOString()}
                               className="text-sm text-ink-muted"
                             >
-                              {dateFr.format(etape.creeLe)}
+                              {dateLocale.format(etape.creeLe)}
                             </time>
                             <span className="leading-relaxed">
-                              {etape.commentaire ?? "Mise à jour du statut."}
+                              {etape.commentaire ?? dico.suivi.majStatut}
                             </span>
                           </li>
                         ))}

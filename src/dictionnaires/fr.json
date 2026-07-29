@@ -207,6 +207,23 @@
     "retour": "Toutes les actualités",
     "publieLe": "Publié le {date}"
   },
+  "suivi": {
+    "metaTitre": "Suivre une commande",
+    "metaDescription": "Suivez l'état de votre commande ou de votre livraison LK-CORPORATE à l'aide de votre référence.",
+    "titre": "Suivre une commande",
+    "chapo": "Saisissez la référence reçue lors de votre demande. Aucun compte n'est nécessaire.",
+    "champReference": "Référence de suivi",
+    "aideReference": "Format « LK-XXXXXX », communiqué à l'envoi de votre demande.",
+    "rechercher": "Rechercher",
+    "introuvableTitre": "Aucune demande sous cette référence",
+    "introuvableTexte": "Vérifiez la saisie, en particulier le tiret. Si le doute persiste, contactez-nous en précisant la date de votre demande.",
+    "indisponibleTitre": "Suivi momentanément indisponible",
+    "indisponibleTexte": "Le service de suivi ne répond pas pour le moment. Réessayez dans quelques minutes.",
+    "referenceLabel": "Référence",
+    "demandeDu": "{domaine}, demande du {date}",
+    "historique": "Historique",
+    "majStatut": "Mise à jour du statut."
+  },
   "erreur404": {
     "etiquette": "Erreur 404",
     "titre": "Cette page n'existe pas",

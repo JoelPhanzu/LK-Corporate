@@ -1,4 +1,6 @@
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import type { Langue } from "@/lib/i18n";
 import { ETAPES_LIVRAISON, type EtapeLivraison } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +20,14 @@ const CORRESPONDANCE: Record<string, EtapeLivraison> = {
  * couleur : un libellé d'état accompagne chaque étape pour les lecteurs
  * d'écran et les daltoniens.
  */
-export function FriseLivraison({ statut }: { statut: string }) {
+export function FriseLivraison({
+  statut,
+  langue,
+}: {
+  statut: string;
+  langue: Langue;
+}) {
+  const dico = getDictionnaire(langue);
   const courante = CORRESPONDANCE[statut] ?? "recue";
   const indexCourant = ETAPES_LIVRAISON.findIndex(
     (etape) => etape.cle === courante,
@@ -30,10 +39,10 @@ export function FriseLivraison({ statut }: { statut: string }) {
         const franchie = index < indexCourant;
         const active = index === indexCourant;
         const etat = franchie
-          ? "Étape franchie"
+          ? dico.livraison.etapeFranchie
           : active
-            ? "Étape en cours"
-            : "Étape à venir";
+            ? dico.livraison.etapeEnCours
+            : dico.livraison.etapeAVenir;
 
         return (
           <li key={etape.cle} className="flex items-center gap-3 sm:block">
@@ -61,7 +70,7 @@ export function FriseLivraison({ statut }: { statut: string }) {
                 active ? "text-ink" : "text-ink-muted",
               )}
             >
-              {etape.label}
+              {dico.livraison[etape.cle]}
               <span className="sr-only"> : {etat}</span>
             </p>
           </li>
