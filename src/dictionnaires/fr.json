@@ -178,6 +178,26 @@
     "envoyer": "Envoyer le message",
     "facultatif": "(facultatif)"
   },
+  "realisations": {
+    "metaTitre": "Nos réalisations",
+    "metaDescription": "Chantiers, installations et projets livrés par LK-CORPORATE : construction, rénovation, travaux publics et énergie solaire.",
+    "titre": "Nos réalisations",
+    "chapo": "Chantiers livrés, installations mises en service et projets menés pour des particuliers, des entreprises et des institutions.",
+    "erreurTitre": "Réalisations momentanément indisponibles",
+    "erreurTexte": "La liste ne peut pas être chargée pour le moment. Réessayez dans quelques minutes.",
+    "videTitre": "Les premières réalisations seront publiées ici",
+    "videTexte": "Chaque projet est ajouté depuis l'espace admin, avec ses photos avant et après, sa description et sa localisation."
+  },
+  "actualites": {
+    "metaTitre": "Actualités",
+    "metaDescription": "Annonces, avancement de chantiers et événements de LK-CORPORATE S.A.S.U.",
+    "titre": "Actualités",
+    "chapo": "Avancement des chantiers, nouvelles prestations et vie de l'entreprise.",
+    "erreurTitre": "Actualités momentanément indisponibles",
+    "erreurTexte": "Le fil ne peut pas être chargé pour le moment. Réessayez dans quelques minutes.",
+    "videTitre": "Aucune actualité publiée pour l'instant",
+    "videTexte": "Les articles rédigés depuis l'espace admin apparaîtront ici dès leur publication."
+  },
   "erreur404": {
     "etiquette": "Erreur 404",
     "titre": "Cette page n'existe pas",

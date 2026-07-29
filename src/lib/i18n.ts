@@ -21,6 +21,19 @@ export const NOMS_LANGUES: Record<Langue, string> = {
   en: "English",
 };
 
+/**
+ * Étiquettes passées à `Intl` pour le formatage des dates.
+ *
+ * Distinctes de `Langue` : une date écrite « 12 mars 2026 » en français
+ * s'écrit « 12 March 2026 » en anglais britannique, et « March 12, 2026 » en
+ * anglais américain. Le britannique est retenu, plus proche des usages de la
+ * clientèle institutionnelle et régionale visée.
+ */
+export const LOCALES_INTL: Record<Langue, string> = {
+  fr: "fr-FR",
+  en: "en-GB",
+};
+
 /** Codes courts, pour le raccourci de l'en-tête où la place manque. */
 export const CODES_LANGUES: Record<Langue, string> = {
   fr: "FR",
@@ -81,6 +94,10 @@ const CHEMINS_TRADUITS = [
   // renvoyés par la Server Action restent français : ils n'apparaissent qu'à
   // la saisie, jamais dans ce que Google indexe.
   "/contact",
+  // Les listes seulement : les pages de détail gardent encore une interface
+  // française, et la correspondance est exacte hors /services/.
+  "/realisations",
+  "/actualites",
 ];
 
 export function traduite(langue: Langue, cheminNu: string): boolean {

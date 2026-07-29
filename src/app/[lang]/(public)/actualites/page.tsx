@@ -1,21 +1,30 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { EnTetePage } from "@/components/public/en-tete-page";
 import { EtatVide } from "@/components/public/etat-vide";
 import { Container } from "@/components/ui/container";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import { LOCALES_INTL, alternances, chemin, estLangue } from "@/lib/i18n";
 import { urlMedia } from "@/lib/medias";
 import { prisma } from "@/lib/prisma";
 
-export const metadata: Metadata = {
-  title: "Actualités",
-  description:
-    "Annonces, avancement de chantiers et événements de LK-CORPORATE S.A.S.U.",
-};
+export async function generateMetadata(
+  props: PageProps<"/[lang]/actualites">,
+): Promise<Metadata> {
+  const { lang } = await props.params;
+  if (!estLangue(lang)) return {};
+
+  const dico = getDictionnaire(lang);
+  return {
+    title: dico.actualites.metaTitre,
+    description: dico.actualites.metaDescription,
+    alternates: alternances(lang, "/actualites"),
+  };
+}
 
 export const dynamic = "force-dynamic";
-
-const dateFr = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" });
 
 async function chargerArticles() {
   try {
@@ -36,29 +45,40 @@ async function chargerArticles() {
   }
 }
 
-export default async function PageActualites() {
+export default async function PageActualites(
+  props: PageProps<"/[lang]/actualites">,
+) {
+  const { lang } = await props.params;
+  if (!estLangue(lang)) notFound();
+
+  const dico = getDictionnaire(lang);
+  // Le format suit la langue de la page : « 12 mars 2026 » devient
+  // « 12 March 2026 ».
+  const dateLocale = new Intl.DateTimeFormat(LOCALES_INTL[lang], {
+    dateStyle: "long",
+  });
   const articles = await chargerArticles();
 
   return (
     <>
       <EnTetePage
-        titre="Actualités"
-        chapo="Avancement des chantiers, nouvelles prestations et vie de l'entreprise."
+        titre={dico.actualites.titre}
+        chapo={dico.actualites.chapo}
       />
 
       <section className="py-16 md:py-24">
         <Container>
           {articles === null && (
             <EtatVide
-              titre="Actualités momentanément indisponibles"
-              texte="Le fil ne peut pas être chargé pour le moment. Réessayez dans quelques minutes."
+              titre={dico.actualites.erreurTitre}
+              texte={dico.actualites.erreurTexte}
             />
           )}
 
           {articles !== null && articles.length === 0 && (
             <EtatVide
-              titre="Aucune actualité publiée pour l'instant"
-              texte="Les articles rédigés depuis l'espace admin apparaîtront ici dès leur publication."
+              titre={dico.actualites.videTitre}
+              texte={dico.actualites.videTexte}
             />
           )}
 
@@ -70,7 +90,7 @@ export default async function PageActualites() {
                 return (
                   <li key={article.slug}>
                     <Link
-                      href={`/actualites/${article.slug}`}
+                      href={chemin(lang, `/actualites/${article.slug}`)}
                       className="group flex flex-col gap-5 py-8 sm:flex-row sm:items-start"
                     >
                       {image && (
@@ -90,7 +110,7 @@ export default async function PageActualites() {
                             dateTime={article.publieLe.toISOString()}
                             className="text-sm text-ink-muted"
                           >
-                            {dateFr.format(article.publieLe)}
+                            {dateLocale.format(article.publieLe)}
                           </time>
                         )}
                         <h2 className="mt-1 text-xl font-bold leading-snug group-hover:text-accent-text">

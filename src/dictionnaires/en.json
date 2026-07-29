@@ -178,6 +178,26 @@
     "envoyer": "Send message",
     "facultatif": "(optional)"
   },
+  "realisations": {
+    "metaTitre": "Our projects",
+    "metaDescription": "Sites, installations and projects delivered by LK-CORPORATE: construction, renovation, public works and solar energy.",
+    "titre": "Our projects",
+    "chapo": "Completed sites, commissioned installations and projects delivered for individuals, businesses and institutions.",
+    "erreurTitre": "Projects temporarily unavailable",
+    "erreurTexte": "The list cannot be loaded at the moment. Please try again in a few minutes.",
+    "videTitre": "The first projects will be published here",
+    "videTexte": "Each project is added from the admin area, with its before and after photos, description and location."
+  },
+  "actualites": {
+    "metaTitre": "News",
+    "metaDescription": "Announcements, site progress and events from LK-CORPORATE S.A.S.U.",
+    "titre": "News",
+    "chapo": "Site progress, new services and company life.",
+    "erreurTitre": "News temporarily unavailable",
+    "erreurTexte": "The feed cannot be loaded at the moment. Please try again in a few minutes.",
+    "videTitre": "No news published yet",
+    "videTexte": "Articles written from the admin area will appear here as soon as they are published."
+  },
   "erreur404": {
     "etiquette": "Error 404",
     "titre": "This page does not exist",
