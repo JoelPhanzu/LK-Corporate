@@ -51,8 +51,22 @@ export default async function LayoutPublic(props: LayoutProps<"/[lang]">) {
       </main>
 
       <Footer langue={lang} />
-      {/* TODO i18n : les libellés du widget de chat restent à externaliser. */}
-      <WidgetChat />
+      <WidgetChat
+        libelles={{
+          ouvrir: dico.chat.ouvrir,
+          dialogue: dico.chat.dialogue,
+          disponibilite: dico.chat.disponibilite,
+          fermer: dico.chat.fermer,
+          accueilTitre: dico.chat.accueilTitre,
+          accueilTexte: dico.chat.accueilTexte,
+          deLEquipe: dico.chat.deLEquipe,
+          deVous: dico.chat.deVous,
+          placeholderNom: dico.chat.placeholderNom,
+          placeholderEmail: dico.chat.placeholderEmail,
+          placeholderMessage: dico.chat.placeholderMessage,
+          envoyer: dico.chat.envoyer,
+        }}
+      />
     </>
   );
 }

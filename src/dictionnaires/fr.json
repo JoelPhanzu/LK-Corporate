@@ -254,6 +254,20 @@
     "envoyer": "Envoyer ma demande",
     "facultatif": "(facultatif)"
   },
+  "chat": {
+    "ouvrir": "Discuter",
+    "dialogue": "Discussion avec LK-CORPORATE",
+    "disponibilite": "Nous répondons pendant les heures ouvrables.",
+    "fermer": "Fermer la discussion",
+    "accueilTitre": "Comment pouvons-nous vous aider ?",
+    "accueilTexte": "Posez votre question sur un chantier, une fourniture ou une livraison. Nous vous répondons ici même.",
+    "deLEquipe": "LK-CORPORATE, ",
+    "deVous": "Vous, ",
+    "placeholderNom": "Votre nom",
+    "placeholderEmail": "Email (facultatif)",
+    "placeholderMessage": "Écrivez votre message",
+    "envoyer": "Envoyer le message"
+  },
   "erreur404": {
     "etiquette": "Erreur 404",
     "titre": "Cette page n'existe pas",

@@ -254,6 +254,20 @@
     "envoyer": "Send my request",
     "facultatif": "(optional)"
   },
+  "chat": {
+    "ouvrir": "Chat",
+    "dialogue": "Chat with LK-CORPORATE",
+    "disponibilite": "We reply during business hours.",
+    "fermer": "Close the chat",
+    "accueilTitre": "How can we help?",
+    "accueilTexte": "Ask about a site, a supply or a delivery. We reply right here.",
+    "deLEquipe": "LK-CORPORATE, ",
+    "deVous": "You, ",
+    "placeholderNom": "Your name",
+    "placeholderEmail": "Email (optional)",
+    "placeholderMessage": "Write your message",
+    "envoyer": "Send message"
+  },
   "erreur404": {
     "etiquette": "Error 404",
     "titre": "This page does not exist",

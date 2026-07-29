@@ -30,7 +30,26 @@ const heureFr = new Intl.DateTimeFormat("fr-FR", { timeStyle: "short" });
  * réseaux mobiles instables. Le passage à Supabase Realtime, si le besoin
  * s'en fait sentir, ne toucherait que ce composant.
  */
-export function WidgetChat() {
+/**
+ * Libellés traduits, fournis par le layout : le dictionnaire est `server-only`,
+ * l'importer dans ce composant client y embarquerait les deux langues.
+ */
+export type LibellesChat = {
+  ouvrir: string;
+  dialogue: string;
+  disponibilite: string;
+  fermer: string;
+  accueilTitre: string;
+  accueilTexte: string;
+  deLEquipe: string;
+  deVous: string;
+  placeholderNom: string;
+  placeholderEmail: string;
+  placeholderMessage: string;
+  envoyer: string;
+};
+
+export function WidgetChat({ libelles }: { libelles: LibellesChat }) {
   const [ouvert, setOuvert] = useState(false);
   const [jeton, setJeton] = useState<string | null>(null);
   const [messages, setMessages] = useState<MessageChat[]>([]);
@@ -149,14 +168,14 @@ export function WidgetChat() {
           className="fixed bottom-5 right-5 z-40 inline-flex h-14 items-center gap-2 rounded-brand bg-accent px-5 font-semibold text-accent-ink shadow-lg transition-colors hover:bg-accent-hover"
         >
           <ChatCircleIcon size={22} weight="fill" aria-hidden />
-          Discuter
+          {libelles.ouvrir}
         </button>
       )}
 
       {ouvert && (
         <div
           role="dialog"
-          aria-label="Discussion avec LK-CORPORATE"
+          aria-label={libelles.dialogue}
           aria-modal="false"
           className="fixed inset-x-0 bottom-0 z-40 flex max-h-[85dvh] flex-col rounded-t-brand border border-line bg-surface shadow-2xl sm:inset-x-auto sm:bottom-5 sm:right-5 sm:h-[32rem] sm:w-96 sm:rounded-brand"
         >
@@ -164,13 +183,13 @@ export function WidgetChat() {
             <div>
               <p className="font-semibold text-ink-on-brand">LK-CORPORATE</p>
               <p className="text-xs text-ink-on-brand-muted">
-                Nous répondons pendant les heures ouvrables.
+                {libelles.disponibilite}
               </p>
             </div>
             <button
               type="button"
               onClick={() => setOuvert(false)}
-              aria-label="Fermer la discussion"
+              aria-label={libelles.fermer}
               className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-brand text-ink-on-brand hover:bg-white/10"
             >
               <XIcon size={20} weight="bold" />
@@ -190,10 +209,9 @@ export function WidgetChat() {
 
             {!chargement && messages.length === 0 && (
               <div className="py-6 text-center">
-                <p className="font-semibold">Comment pouvons-nous vous aider ?</p>
+                <p className="font-semibold">{libelles.accueilTitre}</p>
                 <p className="mx-auto mt-2 max-w-[34ch] text-sm leading-relaxed text-ink-muted">
-                  Posez votre question sur un chantier, une fourniture ou une
-                  livraison. Nous vous répondons ici même.
+                  {libelles.accueilTexte}
                 </p>
               </div>
             )}
@@ -226,7 +244,7 @@ export function WidgetChat() {
                     )}
                   >
                     <span className="sr-only">
-                      {message.deLEquipe ? "LK-CORPORATE, " : "Vous, "}
+                      {message.deLEquipe ? libelles.deLEquipe : libelles.deVous}
                     </span>
                     {heureFr.format(new Date(message.creeLe))}
                   </p>
@@ -257,7 +275,7 @@ export function WidgetChat() {
                     id="chat-nom"
                     value={nom}
                     onChange={(e) => setNom(e.target.value)}
-                    placeholder="Votre nom"
+                    placeholder={libelles.placeholderNom}
                     autoComplete="name"
                     className="w-full rounded-brand border border-line-strong bg-surface px-3 py-2 text-sm placeholder:text-ink-muted"
                   />
@@ -271,7 +289,7 @@ export function WidgetChat() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email (facultatif)"
+                    placeholder={libelles.placeholderEmail}
                     autoComplete="email"
                     className="w-full rounded-brand border border-line-strong bg-surface px-3 py-2 text-sm placeholder:text-ink-muted"
                   />
@@ -298,14 +316,14 @@ export function WidgetChat() {
                   }}
                   rows={2}
                   maxLength={MESSAGE_MAX}
-                  placeholder="Écrivez votre message"
+                  placeholder={libelles.placeholderMessage}
                   className="w-full resize-none rounded-brand border border-line-strong bg-surface px-3 py-2 text-sm placeholder:text-ink-muted"
                 />
               </div>
               <button
                 type="submit"
                 disabled={envoiEnCours || texte.trim() === ""}
-                aria-label="Envoyer le message"
+                aria-label={libelles.envoyer}
                 className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-brand bg-accent text-accent-ink transition-colors hover:bg-accent-hover disabled:opacity-50"
               >
                 <PaperPlaneRightIcon size={18} weight="fill" aria-hidden />
