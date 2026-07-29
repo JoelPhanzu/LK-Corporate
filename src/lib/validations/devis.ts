@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DOMAINES } from "@/lib/domaines";
+import type { MessagesValidation } from "./messages";
 
 const SLUGS = DOMAINES.map((domaine) => domaine.slug) as [string, ...string[]];
 
@@ -16,52 +17,43 @@ export const PIECE_JOINTE = {
 };
 
 /**
- * Schéma partagé entre le navigateur et le serveur.
+ * Schéma d'une demande de devis, construit avec les messages de la langue.
  *
- * La validation côté client sert le confort ; celle côté serveur fait foi.
- * Les deux s'appuient volontairement sur ce même schéma pour ne pas diverger.
+ * Les slugs de domaines ne sont pas traduits : ils servent d'identifiants et
+ * sont communs aux deux langues.
  */
-export const schemaDevis = z.object({
-  nom: z
-    .string()
-    .trim()
-    .min(2, "Indiquez votre nom.")
-    .max(120, "Ce nom est trop long."),
-  email: z
-    .string()
-    .trim()
-    .max(180)
-    .email("Cette adresse email semble incorrecte.")
-    .or(z.literal("")),
-  telephone: z
-    .string()
-    .trim()
-    .max(40, "Ce numéro est trop long.")
-    .or(z.literal("")),
-  entreprise: z.string().trim().max(160).or(z.literal("")),
-  domaineSlug: z.enum(SLUGS, {
-    message: "Choisissez un domaine d'activité.",
-  }),
-  description: z
-    .string()
-    .trim()
-    .min(20, "Décrivez votre besoin en quelques phrases (20 caractères au moins).")
-    .max(5000, "Cette description est trop longue."),
-  budget: z.string().trim().max(80).or(z.literal("")),
-  delaiSouhaite: z.string().trim().max(120).or(z.literal("")),
-  adresseLivraison: z.string().trim().max(300).or(z.literal("")),
-});
+export function schemaDevis(m: MessagesValidation) {
+  return z.object({
+    nom: z.string().trim().min(2, m.nomRequis).max(120, m.nomLong),
+    email: z
+      .string()
+      .trim()
+      .max(180)
+      .email(m.emailInvalide)
+      .or(z.literal("")),
+    telephone: z.string().trim().max(40, m.telephoneLong).or(z.literal("")),
+    entreprise: z.string().trim().max(160).or(z.literal("")),
+    domaineSlug: z.enum(SLUGS, { message: m.domaineRequis }),
+    description: z
+      .string()
+      .trim()
+      .min(20, m.descriptionCourte)
+      .max(5000, m.descriptionLongue),
+    budget: z.string().trim().max(80).or(z.literal("")),
+    delaiSouhaite: z.string().trim().max(120).or(z.literal("")),
+    adresseLivraison: z.string().trim().max(300).or(z.literal("")),
+  });
+}
 
-export type DonneesDevis = z.infer<typeof schemaDevis>;
+export type DonneesDevis = z.infer<ReturnType<typeof schemaDevis>>;
 
 /**
  * Une demande sans aucun moyen de recontact ne sert à rien : on exige au moins
  * l'email ou le téléphone, sans imposer les deux.
  */
-export const schemaDevisComplet = schemaDevis.refine(
-  (donnees) => donnees.email !== "" || donnees.telephone !== "",
-  {
-    message: "Renseignez au moins un email ou un numéro de téléphone.",
-    path: ["email"],
-  },
-);
+export function schemaDevisComplet(m: MessagesValidation) {
+  return schemaDevis(m).refine(
+    (donnees) => donnees.email !== "" || donnees.telephone !== "",
+    { message: m.contactRequis, path: ["email"] },
+  );
+}

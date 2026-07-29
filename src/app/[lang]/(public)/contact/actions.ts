@@ -1,6 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import { LANGUE_PAR_DEFAUT, estLangue } from "@/lib/i18n";
 import { schemaContact } from "@/lib/validations/contact";
 import type { EtatContact } from "./etats";
 
@@ -24,7 +26,14 @@ export async function envoyerContact(
     return { statut: "succes" };
   }
 
-  const resultat = schemaContact.safeParse({
+  // La langue voyage dans le formulaire : une Server Action ne connaît pas
+  // l'URL d'où elle est appelée, et c'est elle qui décide de la langue des
+  // messages d'erreur renvoyés au visiteur.
+  const brut = texte(donnees, "langue");
+  const m = getDictionnaire(estLangue(brut) ? brut : LANGUE_PAR_DEFAUT)
+    .validation;
+
+  const resultat = schemaContact(m).safeParse({
     nom: texte(donnees, "nom"),
     email: texte(donnees, "email"),
     telephone: texte(donnees, "telephone"),
@@ -42,7 +51,7 @@ export async function envoyerContact(
     }
     return {
       statut: "erreur",
-      message: "Certains champs doivent être corrigés.",
+      message: m.champsACorriger,
       champs,
     };
   }
@@ -63,7 +72,7 @@ export async function envoyerContact(
     return {
       statut: "erreur",
       message:
-        "Votre message n'a pas pu être envoyé. Réessayez dans un instant.",
+        m.contactEchec,
     };
   }
 }

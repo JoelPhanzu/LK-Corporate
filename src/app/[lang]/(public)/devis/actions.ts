@@ -1,6 +1,8 @@
 "use server";
 
 import { Prisma } from "@/generated/prisma/client";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import { LANGUE_PAR_DEFAUT, estLangue } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { genererReference } from "@/lib/reference";
 import { BUCKET_PIECES, creerClientAdmin } from "@/lib/supabase/admin";
@@ -30,7 +32,14 @@ export async function envoyerDevis(
     return { statut: "succes", reference: "LK-000000" };
   }
 
-  const resultat = schemaDevisComplet.safeParse({
+  // La langue voyage dans le formulaire : une Server Action ne connaît pas
+  // l'URL d'où elle est appelée, et c'est elle qui décide de la langue des
+  // messages d'erreur renvoyés au visiteur.
+  const brut = texte(donnees, "langue");
+  const m = getDictionnaire(estLangue(brut) ? brut : LANGUE_PAR_DEFAUT)
+    .validation;
+
+  const resultat = schemaDevisComplet(m).safeParse({
     nom: texte(donnees, "nom"),
     email: texte(donnees, "email"),
     telephone: texte(donnees, "telephone"),
@@ -52,7 +61,7 @@ export async function envoyerDevis(
     }
     return {
       statut: "erreur",
-      message: "Certains champs doivent être corrigés.",
+      message: m.champsACorriger,
       champs,
     };
   }
@@ -125,7 +134,7 @@ export async function envoyerDevis(
       return {
         statut: "erreur",
         message:
-          "Vos fichiers n'ont pas pu être envoyés. Réessayez, ou envoyez la demande sans pièce jointe.",
+          m.piecesEchec,
       };
     }
   }
@@ -182,7 +191,7 @@ export async function envoyerDevis(
       return {
         statut: "erreur",
         message:
-          "Votre demande n'a pas pu être enregistrée. Réessayez dans un instant.",
+          m.devisEchec,
       };
     }
   }
@@ -190,6 +199,6 @@ export async function envoyerDevis(
   return {
     statut: "erreur",
     message:
-      "Votre demande n'a pas pu être enregistrée. Réessayez dans un instant.",
+      m.devisEchec,
   };
 }

@@ -41,6 +41,7 @@ export default async function PageDevis(props: PageProps<"/[lang]/devis">) {
         <Container>
           <div className="max-w-2xl">
             <FormulaireDevis
+              langue={lang}
               domaineInitial={domaineInitial}
               domaines={domaines(lang)}
               lienSuivi={chemin(lang, "/suivi")}

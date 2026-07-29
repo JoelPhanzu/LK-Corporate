@@ -52,6 +52,7 @@ export default async function LayoutPublic(props: LayoutProps<"/[lang]">) {
 
       <Footer langue={lang} />
       <WidgetChat
+        langue={lang}
         libelles={{
           ouvrir: dico.chat.ouvrir,
           dialogue: dico.chat.dialogue,

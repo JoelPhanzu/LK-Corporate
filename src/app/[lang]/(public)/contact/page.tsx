@@ -43,6 +43,7 @@ export default async function PageContact(
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-7">
               <FormulaireContact
+              langue={lang}
                 libelles={{
                   succesTitre: dico.contact.succesTitre,
                   succesTexte: dico.contact.succesTexte,

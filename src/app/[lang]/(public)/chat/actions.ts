@@ -3,6 +3,8 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import { LANGUE_PAR_DEFAUT, estLangue } from "@/lib/i18n";
 import { schemaJeton, schemaMessage } from "@/lib/validations/chat";
 import type { EtatChat, MessageChat } from "./etats";
 
@@ -37,8 +39,13 @@ export async function envoyerMessageVisiteur(
   jetonExistant: string | null,
   texte: string,
   identite?: { nom: string; email: string },
+  // Le widget transmet sa langue : une Server Action ne connaît pas l'URL
+  // d'où elle est appelée, et c'est elle qui rédige les erreurs affichées.
+  langue?: string,
 ): Promise<EtatChat> {
-  const contenu = schemaMessage.safeParse(texte);
+  const m = getDictionnaire(estLangue(langue) ? langue : LANGUE_PAR_DEFAUT)
+    .validation;
+  const contenu = schemaMessage(m).safeParse(texte);
   if (!contenu.success) {
     return { statut: "erreur", message: contenu.error.issues[0].message };
   }
@@ -47,7 +54,7 @@ export async function envoyerMessageVisiteur(
     let jeton = jetonExistant;
 
     if (jeton) {
-      const valide = schemaJeton.safeParse(jeton);
+      const valide = schemaJeton(m).safeParse(jeton);
       if (!valide.success) jeton = null;
     }
 
@@ -109,16 +116,21 @@ export async function envoyerMessageVisiteur(
     console.error("Envoi du message visiteur impossible", erreur);
     return {
       statut: "erreur",
-      message: "Votre message n'a pas pu être envoyé. Réessayez dans un instant.",
+      message: m.contactEchec,
     };
   }
 }
 
 /** Recharge le fil d'un visiteur à partir de son jeton. */
-export async function chargerFil(jeton: string): Promise<EtatChat> {
-  const valide = schemaJeton.safeParse(jeton);
+export async function chargerFil(
+  jeton: string,
+  langue?: string,
+): Promise<EtatChat> {
+  const m = getDictionnaire(estLangue(langue) ? langue : LANGUE_PAR_DEFAUT)
+    .validation;
+  const valide = schemaJeton(m).safeParse(jeton);
   if (!valide.success) {
-    return { statut: "erreur", message: "Conversation introuvable." };
+    return { statut: "erreur", message: m.conversationIntrouvable };
   }
 
   try {
@@ -135,7 +147,7 @@ export async function chargerFil(jeton: string): Promise<EtatChat> {
     });
 
     if (!conversation) {
-      return { statut: "erreur", message: "Conversation introuvable." };
+      return { statut: "erreur", message: m.conversationIntrouvable };
     }
 
     return {
@@ -147,7 +159,7 @@ export async function chargerFil(jeton: string): Promise<EtatChat> {
     console.error("Chargement du fil impossible", erreur);
     return {
       statut: "erreur",
-      message: "La discussion n'a pas pu être chargée.",
+      message: m.filEchec,
     };
   }
 }

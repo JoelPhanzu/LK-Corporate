@@ -49,7 +49,13 @@ export type LibellesChat = {
   envoyer: string;
 };
 
-export function WidgetChat({ libelles }: { libelles: LibellesChat }) {
+export function WidgetChat({
+  libelles,
+  langue,
+}: {
+  libelles: LibellesChat;
+  langue: string;
+}) {
   const [ouvert, setOuvert] = useState(false);
   const [jeton, setJeton] = useState<string | null>(null);
   const [messages, setMessages] = useState<MessageChat[]>([]);
@@ -64,11 +70,13 @@ export function WidgetChat({ libelles }: { libelles: LibellesChat }) {
   const champTexte = useRef<HTMLTextAreaElement>(null);
 
   const rafraichir = useCallback(async (jetonCourant: string) => {
-    const resultat = await chargerFil(jetonCourant);
+    const resultat = await chargerFil(jetonCourant, langue);
     if (resultat.statut === "ok") {
       setMessages(resultat.messages);
     }
-  }, []);
+    // `langue` en dépendance : sans elle, le rafraîchissement figerait la
+    // langue du premier rendu et renverrait des erreurs dans l'autre.
+  }, [langue]);
 
   /**
    * Ouvre le panneau et charge la conversation précédente s'il y en a une.
@@ -93,7 +101,7 @@ export function WidgetChat({ libelles }: { libelles: LibellesChat }) {
 
     setJeton(enregistre);
     setChargement(true);
-    const resultat = await chargerFil(enregistre);
+    const resultat = await chargerFil(enregistre, langue);
     if (resultat.statut === "ok") setMessages(resultat.messages);
     setChargement(false);
   }
@@ -136,6 +144,7 @@ export function WidgetChat({ libelles }: { libelles: LibellesChat }) {
       jeton,
       contenu,
       jeton ? undefined : { nom: nom.trim(), email: email.trim() },
+      langue,
     );
 
     if (resultat.statut === "ok") {

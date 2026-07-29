@@ -27,8 +27,10 @@ export type LibellesContact = {
 
 export function FormulaireContact({
   libelles,
+  langue,
 }: {
   libelles: LibellesContact;
+  langue: string;
 }) {
   const [etat, action, enCours] = useActionState(
     envoyerContact,
@@ -56,6 +58,10 @@ export function FormulaireContact({
 
   return (
     <form action={action} className="space-y-6" noValidate>
+      {/* La langue accompagne la soumission : la Server Action ne connaît pas
+          l'URL d'où elle est appelée et doit répondre dans la bonne langue. */}
+      <input type="hidden" name="langue" value={langue} />
+
       {etat.statut === "erreur" && (
         <div
           role="alert"

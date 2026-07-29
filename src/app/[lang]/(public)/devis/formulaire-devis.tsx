@@ -48,11 +48,13 @@ export function FormulaireDevis({
   domaines,
   lienSuivi,
   libelles,
+  langue,
 }: {
   domaineInitial?: string;
   domaines: Domaine[];
   lienSuivi: string;
   libelles: LibellesDevis;
+  langue: string;
 }) {
   const [etat, action, enCours] = useActionState(
     envoyerDevis,
@@ -92,6 +94,10 @@ export function FormulaireDevis({
 
   return (
     <form action={action} className="space-y-7" noValidate>
+      {/* La langue accompagne la soumission : la Server Action ne connaît pas
+          l'URL d'où elle est appelée et doit répondre dans la bonne langue. */}
+      <input type="hidden" name="langue" value={langue} />
+
       {etat.statut === "erreur" && (
         <div
           role="alert"
