@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { DOMAINES } from "@/lib/domaines";
+import { ETIQUETTES_HREFLANG, LANGUES } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { SITE } from "@/lib/site";
 
@@ -14,20 +15,44 @@ const PAGES_FIXES = [
   { chemin: "/contact", priorite: 0.6 },
 ];
 
+/**
+ * Une entrée par langue, chacune déclarant ses équivalents.
+ *
+ * Les chemins sont communs aux deux langues, seul le préfixe change : les
+ * slugs de domaines et de contenus servent d'identifiants et ne sont pas
+ * traduits. Sans le préfixe, chaque URL du sitemap se ferait rediriger par le
+ * proxy, ce qui dilue le budget d'exploration et brouille la canonisation.
+ */
+function entrees(
+  chemin: string,
+  priorite: number,
+  lastModified: Date,
+): MetadataRoute.Sitemap {
+  const languages = Object.fromEntries(
+    LANGUES.map((langue) => [
+      ETIQUETTES_HREFLANG[langue],
+      `${SITE.url}/${langue}${chemin}`,
+    ]),
+  );
+
+  return LANGUES.map((langue) => ({
+    url: `${SITE.url}/${langue}${chemin}`,
+    lastModified,
+    priority: priorite,
+    alternates: { languages },
+  }));
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const maintenant = new Date();
 
-  const entrees: MetadataRoute.Sitemap = [
-    ...PAGES_FIXES.map((page) => ({
-      url: `${SITE.url}${page.chemin}`,
-      lastModified: maintenant,
-      priority: page.priorite,
-    })),
-    ...DOMAINES.map((domaine) => ({
-      url: `${SITE.url}/services/${domaine.slug}`,
-      lastModified: maintenant,
-      priority: 0.8,
-    })),
+  const liste: MetadataRoute.Sitemap = [
+    ...PAGES_FIXES.flatMap((page) =>
+      entrees(page.chemin, page.priorite, maintenant),
+    ),
+    ...DOMAINES.flatMap((domaine) =>
+      entrees(`/services/${domaine.slug}`, 0.8, maintenant),
+    ),
   ];
 
   // Le contenu éditorial n'est ajouté que si la base répond : un sitemap
@@ -44,21 +69,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
     ]);
 
-    entrees.push(
-      ...realisations.map((item) => ({
-        url: `${SITE.url}/realisations/${item.slug}`,
-        lastModified: item.modifieLe,
-        priority: 0.7,
-      })),
-      ...articles.map((item) => ({
-        url: `${SITE.url}/actualites/${item.slug}`,
-        lastModified: item.modifieLe,
-        priority: 0.6,
-      })),
+    liste.push(
+      ...realisations.flatMap((item) =>
+        entrees(`/realisations/${item.slug}`, 0.7, item.modifieLe),
+      ),
+      ...articles.flatMap((item) =>
+        entrees(`/actualites/${item.slug}`, 0.6, item.modifieLe),
+      ),
     );
   } catch (erreur) {
     console.error("Contenus dynamiques absents du sitemap", erreur);
   }
 
-  return entrees;
+  return liste;
 }
