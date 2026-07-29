@@ -157,6 +157,27 @@
       }
     ]
   },
+  "contact": {
+    "metaTitre": "Contact",
+    "metaDescription": "Contactez LK-CORPORATE S.A.S.U. pour un projet de construction, une fourniture de matériaux, une installation solaire ou une prestation de transport.",
+    "titre": "Nous contacter",
+    "chapo": "Une question, une demande de renseignement ou un partenariat. Pour un chiffrage, passez plutôt par le formulaire de devis.",
+    "coordonneesTitre": "Coordonnées",
+    "coordonneesVide": "Téléphone, adresse email et localisation seront affichés ici dès leur transmission par LK-CORPORATE.",
+    "chiffrageTitre": "Besoin d'un chiffrage ?",
+    "chiffrageTexte": "Le formulaire de devis permet de préciser le domaine, les délais et de joindre vos documents.",
+    "chiffrageLien": "Aller au formulaire de devis",
+    "succesTitre": "Message envoyé",
+    "succesTexte": "Nous avons bien reçu votre message et vous répondrons à l'adresse indiquée.",
+    "champNom": "Nom et prénom",
+    "champEmail": "Email",
+    "champTelephone": "Téléphone",
+    "champSujet": "Objet",
+    "champMessage": "Votre message",
+    "nePasRemplir": "Ne pas remplir",
+    "envoyer": "Envoyer le message",
+    "facultatif": "(facultatif)"
+  },
   "erreur404": {
     "etiquette": "Erreur 404",
     "titre": "Cette page n'existe pas",

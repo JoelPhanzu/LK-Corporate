@@ -1,17 +1,34 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { EnTetePage } from "@/components/public/en-tete-page";
 import { Container } from "@/components/ui/container";
 import { getCoordonnees } from "@/lib/contenu";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import { alternances, chemin, estLangue } from "@/lib/i18n";
 import { FormulaireContact } from "./formulaire-contact";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description:
-    "Contactez LK-CORPORATE S.A.S.U. pour un projet de construction, une fourniture de matériaux, une installation solaire ou une prestation de transport.",
-};
+export async function generateMetadata(
+  props: PageProps<"/[lang]/contact">,
+): Promise<Metadata> {
+  const { lang } = await props.params;
+  if (!estLangue(lang)) return {};
 
-export default async function PageContact() {
+  const dico = getDictionnaire(lang);
+  return {
+    title: dico.contact.metaTitre,
+    description: dico.contact.metaDescription,
+    alternates: alternances(lang, "/contact"),
+  };
+}
+
+export default async function PageContact(
+  props: PageProps<"/[lang]/contact">,
+) {
+  const { lang } = await props.params;
+  if (!estLangue(lang)) notFound();
+
+  const dico = getDictionnaire(lang);
   const contact = await getCoordonnees();
   const adresse = [contact.adresse, contact.ville, contact.pays].filter(Boolean);
   const aDesCoordonnees =
@@ -19,21 +36,34 @@ export default async function PageContact() {
 
   return (
     <>
-      <EnTetePage
-        titre="Nous contacter"
-        chapo="Une question, une demande de renseignement ou un partenariat. Pour un chiffrage, passez plutôt par le formulaire de devis."
-      />
+      <EnTetePage titre={dico.contact.titre} chapo={dico.contact.chapo} />
 
       <section className="py-16 md:py-24">
         <Container>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-7">
-              <FormulaireContact />
+              <FormulaireContact
+                libelles={{
+                  succesTitre: dico.contact.succesTitre,
+                  succesTexte: dico.contact.succesTexte,
+                  champNom: dico.contact.champNom,
+                  champEmail: dico.contact.champEmail,
+                  champTelephone: dico.contact.champTelephone,
+                  champSujet: dico.contact.champSujet,
+                  champMessage: dico.contact.champMessage,
+                  nePasRemplir: dico.contact.nePasRemplir,
+                  envoyer: dico.contact.envoyer,
+                  envoi: dico.commun.envoi,
+                  facultatif: dico.contact.facultatif,
+                }}
+              />
             </div>
 
             <aside className="lg:col-span-5">
               <div className="rounded-brand border border-line bg-surface-sunken p-6">
-                <h2 className="text-lg font-bold">Coordonnées</h2>
+                <h2 className="text-lg font-bold">
+                  {dico.contact.coordonneesTitre}
+                </h2>
 
                 {aDesCoordonnees ? (
                   <ul className="mt-4 space-y-3 text-sm">
@@ -70,8 +100,7 @@ export default async function PageContact() {
                      les attend du client. La carte demandée au §4 sera ajoutée
                      en même temps que l'adresse. */
                   <p className="mt-4 text-sm leading-relaxed text-ink-muted">
-                    Téléphone, adresse email et localisation seront affichés ici
-                    dès leur transmission par LK-CORPORATE.
+                    {dico.contact.coordonneesVide}
                   </p>
                 )}
 
@@ -89,16 +118,17 @@ export default async function PageContact() {
               </div>
 
               <div className="mt-6 rounded-brand border border-line p-6">
-                <h2 className="text-lg font-bold">Besoin d&apos;un chiffrage ?</h2>
+                <h2 className="text-lg font-bold">
+                  {dico.contact.chiffrageTitre}
+                </h2>
                 <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-                  Le formulaire de devis permet de préciser le domaine, les
-                  délais et de joindre vos documents.
+                  {dico.contact.chiffrageTexte}
                 </p>
                 <Link
-                  href="/devis"
+                  href={chemin(lang, "/devis")}
                   className="mt-4 inline-flex text-sm font-semibold text-accent-text hover:underline"
                 >
-                  Aller au formulaire de devis
+                  {dico.contact.chiffrageLien}
                 </Link>
               </div>
             </aside>

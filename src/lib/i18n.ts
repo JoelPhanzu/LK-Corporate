@@ -77,6 +77,10 @@ const CHEMINS_TRADUITS = [
   "/services",
   "/a-propos",
   "/mentions-legales",
+  // Le contenu indexable de /contact est traduit. Les messages de validation
+  // renvoyés par la Server Action restent français : ils n'apparaissent qu'à
+  // la saisie, jamais dans ce que Google indexe.
+  "/contact",
 ];
 
 export function traduite(langue: Langue, cheminNu: string): boolean {

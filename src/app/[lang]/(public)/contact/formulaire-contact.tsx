@@ -7,7 +7,29 @@ import { Champ, Input, Textarea } from "@/components/ui/formulaire";
 import { envoyerContact } from "./actions";
 import { ETAT_CONTACT_INITIAL } from "./etats";
 
-export function FormulaireContact() {
+/**
+ * Libellés traduits, fournis par la page. Le dictionnaire est `server-only` :
+ * l'importer ici embarquerait les deux langues dans le bundle du navigateur.
+ */
+export type LibellesContact = {
+  succesTitre: string;
+  succesTexte: string;
+  champNom: string;
+  champEmail: string;
+  champTelephone: string;
+  champSujet: string;
+  champMessage: string;
+  nePasRemplir: string;
+  envoyer: string;
+  envoi: string;
+  facultatif: string;
+};
+
+export function FormulaireContact({
+  libelles,
+}: {
+  libelles: LibellesContact;
+}) {
   const [etat, action, enCours] = useActionState(
     envoyerContact,
     ETAT_CONTACT_INITIAL,
@@ -22,10 +44,9 @@ export function FormulaireContact() {
           aria-hidden
           className="text-accent-text"
         />
-        <h2 className="mt-4 text-2xl">Message envoyé</h2>
+        <h2 className="mt-4 text-2xl">{libelles.succesTitre}</h2>
         <p className="mt-3 max-w-[55ch] leading-relaxed text-ink-muted">
-          Nous avons bien reçu votre message et vous répondrons à
-          l&apos;adresse indiquée.
+          {libelles.succesTexte}
         </p>
       </div>
     );
@@ -50,7 +71,7 @@ export function FormulaireContact() {
         </div>
       )}
 
-      <Champ htmlFor="nom" label="Nom et prénom" obligatoire erreur={erreurs.nom}>
+      <Champ htmlFor="nom" label={libelles.champNom} obligatoire erreur={erreurs.nom}>
         <Input
           id="nom"
           name="nom"
@@ -62,7 +83,7 @@ export function FormulaireContact() {
       </Champ>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <Champ htmlFor="email" label="Email" obligatoire erreur={erreurs.email}>
+        <Champ htmlFor="email" label={libelles.champEmail} obligatoire erreur={erreurs.email}>
           <Input
             id="email"
             name="email"
@@ -74,7 +95,12 @@ export function FormulaireContact() {
           />
         </Champ>
 
-        <Champ htmlFor="telephone" label="Téléphone" erreur={erreurs.telephone}>
+        <Champ
+          htmlFor="telephone"
+          label={libelles.champTelephone}
+          libelleFacultatif={libelles.facultatif}
+          erreur={erreurs.telephone}
+        >
           <Input
             id="telephone"
             name="telephone"
@@ -85,7 +111,7 @@ export function FormulaireContact() {
         </Champ>
       </div>
 
-      <Champ htmlFor="sujet" label="Objet" obligatoire erreur={erreurs.sujet}>
+      <Champ htmlFor="sujet" label={libelles.champSujet} obligatoire erreur={erreurs.sujet}>
         <Input
           id="sujet"
           name="sujet"
@@ -97,7 +123,7 @@ export function FormulaireContact() {
 
       <Champ
         htmlFor="message"
-        label="Votre message"
+        label={libelles.champMessage}
         obligatoire
         erreur={erreurs.message}
       >
@@ -113,12 +139,12 @@ export function FormulaireContact() {
 
       {/* Piège à robots : masqué visuellement et retiré du parcours clavier. */}
       <div aria-hidden className="hidden">
-        <label htmlFor="site_web">Ne pas remplir</label>
+        <label htmlFor="site_web">{libelles.nePasRemplir}</label>
         <input id="site_web" name="site_web" tabIndex={-1} autoComplete="off" />
       </div>
 
       <Bouton type="submit" disabled={enCours} className="w-full sm:w-auto">
-        {enCours ? "Envoi en cours..." : "Envoyer le message"}
+        {enCours ? libelles.envoi : libelles.envoyer}
       </Bouton>
     </form>
   );

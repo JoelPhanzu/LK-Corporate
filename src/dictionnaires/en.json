@@ -157,6 +157,27 @@
       }
     ]
   },
+  "contact": {
+    "metaTitre": "Contact",
+    "metaDescription": "Contact LK-CORPORATE S.A.S.U. about a construction project, a materials supply, a solar installation or a transport service.",
+    "titre": "Get in touch",
+    "chapo": "A question, a request for information or a partnership. For a costing, use the quote form instead.",
+    "coordonneesTitre": "Contact details",
+    "coordonneesVide": "Telephone, email address and location will appear here as soon as LK-CORPORATE provides them.",
+    "chiffrageTitre": "Need a costing?",
+    "chiffrageTexte": "The quote form lets you specify the area and deadlines, and attach your documents.",
+    "chiffrageLien": "Go to the quote form",
+    "succesTitre": "Message sent",
+    "succesTexte": "We have received your message and will reply to the address you provided.",
+    "champNom": "Full name",
+    "champEmail": "Email",
+    "champTelephone": "Telephone",
+    "champSujet": "Subject",
+    "champMessage": "Your message",
+    "nePasRemplir": "Do not fill in",
+    "envoyer": "Send message",
+    "facultatif": "(optional)"
+  },
   "erreur404": {
     "etiquette": "Error 404",
     "titre": "This page does not exist",
