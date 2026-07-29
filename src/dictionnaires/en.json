@@ -84,6 +84,79 @@
     "besoinTexte": "The form opens with this area already selected. You can attach your plans, photos or documents.",
     "autresDomaines": "Other areas"
   },
+  "aPropos": {
+    "metaTitre": "About",
+    "metaDescription": "LK-CORPORATE S.A.S.U., a Congolese construction, public works, energy and logistics company serving individuals, businesses and institutions.",
+    "titre": "A Congolese company, committed to results",
+    "chapo": "LK-CORPORATE S.A.S.U. supports individuals, businesses and institutions in delivering their construction, equipment and transport projects.",
+    "quiTitre": "Who we are",
+    "quiParagraphes": [
+      "LK-CORPORATE S.A.S.U. is a Congolese company committed to providing reliable, innovative and lasting solutions in trade, construction, real estate, public works, logistics and transport, renewable energy and business services.",
+      "With a skilled team and a quality-driven approach, the company supports individuals, businesses and institutions in delivering their projects, guaranteeing professionalism, efficiency and respect for deadlines.",
+      "Excellence, integrity and client satisfaction are at the heart of everything it builds."
+    ],
+    "engagementsTitre": "What you can expect from us",
+    "engagements": [
+      {
+        "titre": "A quote that holds",
+        "texte": "The price quoted is the price invoiced. Any change of scope is agreed with you before it is committed."
+      },
+      {
+        "titre": "Deadlines set in advance",
+        "texte": "Every site starts with a written schedule. You are told as soon as a setback shifts it, without having to ask."
+      },
+      {
+        "titre": "A single point of contact",
+        "texte": "One person follows your file from the first conversation to handover, however many trades are involved."
+      },
+      {
+        "titre": "Tracking available online",
+        "texte": "Your orders and deliveries can be tracked from the site at any hour, with their progress kept up to date."
+      }
+    ],
+    "equipeTitre": "The team",
+    "equipeVideTitre": "Team members will be introduced here",
+    "equipeVideTexte": "Photo, name and role of each contact, updated from the admin area.",
+    "ctaTitre": "Let's talk about your project"
+  },
+  "mentions": {
+    "titre": "Legal notice",
+    "avertissementTitre": "Page to be completed before going live",
+    "avertissementTexte": "The legal details of {raisonSociale} must be supplied by the company. They have deliberately not been drafted on its behalf.",
+    "rubriques": [
+      {
+        "titre": "Site publisher",
+        "aRenseigner": [
+          "Full company name and legal form",
+          "Registered office address",
+          "RCCM number and national identifier",
+          "Name of the legal representative and of the publication director",
+          "Contact telephone number and email address"
+        ]
+      },
+      {
+        "titre": "Hosting",
+        "aRenseigner": [
+          "Name of the chosen host",
+          "Address and contact details of the host"
+        ]
+      },
+      {
+        "titre": "Intellectual property",
+        "aRenseigner": [
+          "Reservation of rights over texts, photographs and logo"
+        ]
+      },
+      {
+        "titre": "Personal data",
+        "aRenseigner": [
+          "Purpose of the data collected by the quote and contact forms",
+          "Retention period",
+          "How to exercise rights of access, rectification and erasure"
+        ]
+      }
+    ]
+  },
   "erreur404": {
     "etiquette": "Error 404",
     "titre": "This page does not exist",

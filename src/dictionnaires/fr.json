@@ -84,6 +84,79 @@
     "besoinTexte": "Le formulaire arrive avec ce domaine déjà sélectionné. Vous pouvez y joindre vos plans, photos ou documents.",
     "autresDomaines": "Autres domaines"
   },
+  "aPropos": {
+    "metaTitre": "À propos",
+    "metaDescription": "LK-CORPORATE S.A.S.U., société congolaise de construction, de travaux publics, d'énergie et de logistique, au service des particuliers, des entreprises et des institutions.",
+    "titre": "Une entreprise congolaise, un engagement de résultat",
+    "chapo": "LK-CORPORATE S.A.S.U. accompagne particuliers, entreprises et institutions dans la réalisation de leurs projets de construction, d'équipement et de transport.",
+    "quiTitre": "Qui nous sommes",
+    "quiParagraphes": [
+      "LK-CORPORATE S.A.S.U. est une société congolaise engagée à fournir des solutions fiables, innovantes et durables dans les domaines du commerce, de la construction, de l'immobilier, des travaux publics, de la logistique et du transport, des énergies renouvelables et des services aux entreprises.",
+      "Grâce à une équipe compétente et à une approche axée sur la qualité, l'entreprise accompagne les particuliers, les entreprises et les institutions dans la réalisation de leurs projets, en garantissant professionnalisme, efficacité et respect des délais.",
+      "L'excellence, l'intégrité et la satisfaction des clients sont au cœur de chacune de ses réalisations."
+    ],
+    "engagementsTitre": "Ce que vous pouvez attendre de nous",
+    "engagements": [
+      {
+        "titre": "Un devis qui tient",
+        "texte": "Le montant annoncé est le montant facturé. Toute évolution du périmètre est validée avec vous avant d'être engagée."
+      },
+      {
+        "titre": "Des délais annoncés à l'avance",
+        "texte": "Chaque chantier démarre avec un calendrier écrit. Vous êtes prévenu dès qu'un aléa le décale, sans avoir à le demander."
+      },
+      {
+        "titre": "Un interlocuteur unique",
+        "texte": "Une seule personne suit votre dossier du premier échange à la réception, quel que soit le nombre de corps de métier mobilisés."
+      },
+      {
+        "titre": "Un suivi consultable en ligne",
+        "texte": "Vos commandes et vos livraisons sont suivies depuis le site, à toute heure, avec leur état d'avancement à jour."
+      }
+    ],
+    "equipeTitre": "L'équipe",
+    "equipeVideTitre": "Les membres de l'équipe seront présentés ici",
+    "equipeVideTexte": "Photo, nom et fonction de chaque interlocuteur, mis à jour depuis l'espace admin.",
+    "ctaTitre": "Parlons de votre projet"
+  },
+  "mentions": {
+    "titre": "Mentions légales",
+    "avertissementTitre": "Page à compléter avant mise en ligne",
+    "avertissementTexte": "Les informations légales de {raisonSociale} doivent être fournies par l'entreprise. Elles n'ont volontairement pas été rédigées à sa place.",
+    "rubriques": [
+      {
+        "titre": "Éditeur du site",
+        "aRenseigner": [
+          "Dénomination sociale complète et forme juridique",
+          "Adresse du siège social",
+          "Numéro RCCM et identifiant national",
+          "Nom du représentant légal et du directeur de la publication",
+          "Téléphone et adresse email de contact"
+        ]
+      },
+      {
+        "titre": "Hébergement",
+        "aRenseigner": [
+          "Nom de l'hébergeur retenu",
+          "Adresse et coordonnées de l'hébergeur"
+        ]
+      },
+      {
+        "titre": "Propriété intellectuelle",
+        "aRenseigner": [
+          "Mention de réserve des droits sur les textes, photographies et logo"
+        ]
+      },
+      {
+        "titre": "Données personnelles",
+        "aRenseigner": [
+          "Finalité des données collectées par les formulaires de devis et de contact",
+          "Durée de conservation",
+          "Modalités d'exercice des droits d'accès, de rectification et de suppression"
+        ]
+      }
+    ]
+  },
   "erreur404": {
     "etiquette": "Erreur 404",
     "titre": "Cette page n'existe pas",

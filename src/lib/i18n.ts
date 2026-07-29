@@ -72,7 +72,12 @@ export function cheminSansLangue(pathname: string): string {
  * Ajouter chaque chemin ici au fur et à mesure, puis supprimer ce mécanisme
  * quand la traduction sera complète.
  */
-const CHEMINS_TRADUITS = ["/", "/services"];
+const CHEMINS_TRADUITS = [
+  "/",
+  "/services",
+  "/a-propos",
+  "/mentions-legales",
+];
 
 export function traduite(langue: Langue, cheminNu: string): boolean {
   if (langue === LANGUE_PAR_DEFAUT) return true;
