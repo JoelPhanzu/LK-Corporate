@@ -1,0 +1,54 @@
+{
+  "site": {
+    "accroche": "Construction, public works and logistics",
+    "description": "LK-CORPORATE S.A.S.U. supports individuals, businesses and institutions in construction, civil engineering, public works, solar energy and logistics.",
+    "localeOpenGraph": "en_GB"
+  },
+  "nav": {
+    "accueil": "Home",
+    "aPropos": "About",
+    "services": "Services",
+    "realisations": "Projects",
+    "actualites": "News",
+    "contact": "Contact",
+    "principale": "Main navigation",
+    "principaleMobile": "Main navigation, mobile",
+    "ouvrirMenu": "Open menu",
+    "fermerMenu": "Close menu"
+  },
+  "commun": {
+    "allerAuContenu": "Skip to content",
+    "demanderDevis": "Request a quote",
+    "voirRealisations": "See our projects",
+    "retourAccueil": "Back to home",
+    "suivreCommande": "Track an order",
+    "envoi": "Sending…",
+    "champObligatoire": "Required field"
+  },
+  "pied": {
+    "navigation": "Navigation",
+    "services": "Services",
+    "contact": "Contact",
+    "voirTousDomaines": "See all 9 areas",
+    "droitsReserves": "All rights reserved.",
+    "mentionsLegales": "Legal notice",
+    "navigationAria": "Footer, navigation",
+    "servicesAria": "Footer, services"
+  },
+  "preferences": {
+    "theme": "Theme",
+    "themeClair": "Light",
+    "themeSombre": "Dark",
+    "themeAppareil": "Device",
+    "langue": "Language"
+  },
+  "livraison": {
+    "recue": "Received",
+    "preparation": "In preparation",
+    "transit": "In transit",
+    "livree": "Delivered",
+    "etapeFranchie": "Step completed",
+    "etapeEnCours": "Current step",
+    "etapeAVenir": "Upcoming step"
+  }
+}

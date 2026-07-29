@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Décrivez votre projet de construction, de fourniture, d'installation ou de transport et recevez une proposition chiffrée de LK-CORPORATE.",
 };
 
-export default async function PageDevis(props: PageProps<"/devis">) {
+export default async function PageDevis(props: PageProps<"/[lang]/devis">) {
   // Le lien depuis une fiche service arrive avec ?domaine=slug : on présélectionne
   // le domaine, après avoir vérifié qu'il existe bien.
   const { domaine } = await props.searchParams;

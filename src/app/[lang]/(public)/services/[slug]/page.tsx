@@ -15,7 +15,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata(
-  props: PageProps<"/services/[slug]">,
+  props: PageProps<"/[lang]/services/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
   const domaine = getDomaine(slug);
@@ -28,7 +28,7 @@ export async function generateMetadata(
   };
 }
 
-export default async function PageDomaine(props: PageProps<"/services/[slug]">) {
+export default async function PageDomaine(props: PageProps<"/[lang]/services/[slug]">) {
   const { slug } = await props.params;
   const domaine = getDomaine(slug);
   if (!domaine) notFound();

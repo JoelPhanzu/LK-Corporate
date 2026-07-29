@@ -6,8 +6,8 @@ import {
   PaperPlaneRightIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { chargerFil, envoyerMessageVisiteur } from "@/app/(public)/chat/actions";
-import { CLE_JETON, type MessageChat } from "@/app/(public)/chat/etats";
+import { chargerFil, envoyerMessageVisiteur } from "@/app/[lang]/(public)/chat/actions";
+import { CLE_JETON, type MessageChat } from "@/app/[lang]/(public)/chat/etats";
 import { MESSAGE_MAX } from "@/lib/validations/chat";
 import { cn } from "@/lib/utils";
 

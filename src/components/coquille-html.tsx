@@ -1,8 +1,16 @@
-import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
-import { SITE } from "@/lib/site";
 import { SCRIPT_THEME } from "@/lib/theme";
-import "./globals.css";
+import "@/app/globals.css";
+
+/**
+ * Coquille `<html>` / `<body>` partagée par les deux layouts racines.
+ *
+ * Le site a deux racines : le vitrine sous `[lang]`, dont l'attribut `lang`
+ * varie, et l'espace d'administration, qui reste en français. Next.js autorise
+ * cette configuration dès lors qu'aucun `app/layout.tsx` ne les surplombe. Ce
+ * composant évite d'en dupliquer la coquille, police et script de thème
+ * compris.
+ */
 
 /**
  * Archivo : grotesque à caractère industriel, lisible en petit corps et doté
@@ -16,26 +24,13 @@ const archivo = Archivo({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
-  title: {
-    default: `${SITE.nom} | ${SITE.accroche}`,
-    template: `%s | ${SITE.nom}`,
-  },
-  description: SITE.description,
-  openGraph: {
-    type: "website",
-    locale: "fr_CD",
-    siteName: SITE.nom,
-    title: `${SITE.nom} | ${SITE.accroche}`,
-    description: SITE.description,
-  },
-  robots: { index: true, follow: true },
-};
-
-export default function RootLayout({
+export function CoquilleHtml({
+  langue,
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  langue: string;
+  children: React.ReactNode;
+}) {
   return (
     // `data-theme` n'est volontairement PAS rendu côté serveur : le laisser
     // absent permet à globals.css de retomber sur la préférence système pour
@@ -43,7 +38,7 @@ export default function RootLayout({
     // pour tous les autres, d'où `suppressHydrationWarning` : l'attribut aura
     // déjà changé quand React hydratera.
     <html
-      lang="fr"
+      lang={langue}
       className={`${archivo.variable} h-full`}
       suppressHydrationWarning
     >

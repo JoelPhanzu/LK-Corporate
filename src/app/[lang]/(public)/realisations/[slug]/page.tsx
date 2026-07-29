@@ -24,7 +24,7 @@ async function chargerRealisation(slug: string) {
 }
 
 export async function generateMetadata(
-  props: PageProps<"/realisations/[slug]">,
+  props: PageProps<"/[lang]/realisations/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
   const realisation = await chargerRealisation(slug);
@@ -37,7 +37,7 @@ export async function generateMetadata(
 }
 
 export default async function PageRealisation(
-  props: PageProps<"/realisations/[slug]">,
+  props: PageProps<"/[lang]/realisations/[slug]">,
 ) {
   const { slug } = await props.params;
   const realisation = await chargerRealisation(slug);

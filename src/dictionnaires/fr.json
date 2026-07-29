@@ -1,0 +1,54 @@
+{
+  "site": {
+    "accroche": "Construction, travaux publics et logistique",
+    "description": "LK-CORPORATE S.A.S.U. accompagne particuliers, entreprises et institutions en construction, génie civil, travaux publics, énergie solaire et logistique.",
+    "localeOpenGraph": "fr_CD"
+  },
+  "nav": {
+    "accueil": "Accueil",
+    "aPropos": "À propos",
+    "services": "Services",
+    "realisations": "Réalisations",
+    "actualites": "Actualités",
+    "contact": "Contact",
+    "principale": "Navigation principale",
+    "principaleMobile": "Navigation principale mobile",
+    "ouvrirMenu": "Ouvrir le menu",
+    "fermerMenu": "Fermer le menu"
+  },
+  "commun": {
+    "allerAuContenu": "Aller au contenu",
+    "demanderDevis": "Demander un devis",
+    "voirRealisations": "Voir nos réalisations",
+    "retourAccueil": "Retour à l'accueil",
+    "suivreCommande": "Suivre une commande",
+    "envoi": "Envoi en cours…",
+    "champObligatoire": "Champ obligatoire"
+  },
+  "pied": {
+    "navigation": "Navigation",
+    "services": "Services",
+    "contact": "Contact",
+    "voirTousDomaines": "Voir les 9 domaines",
+    "droitsReserves": "Tous droits réservés.",
+    "mentionsLegales": "Mentions légales",
+    "navigationAria": "Pied de page, navigation",
+    "servicesAria": "Pied de page, services"
+  },
+  "preferences": {
+    "theme": "Thème",
+    "themeClair": "Clair",
+    "themeSombre": "Sombre",
+    "themeAppareil": "Appareil",
+    "langue": "Langue"
+  },
+  "livraison": {
+    "recue": "Reçue",
+    "preparation": "En préparation",
+    "transit": "En transit",
+    "livree": "Livrée",
+    "etapeFranchie": "Étape franchie",
+    "etapeEnCours": "Étape en cours",
+    "etapeAVenir": "Étape à venir"
+  }
+}

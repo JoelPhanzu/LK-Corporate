@@ -1,13 +1,16 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { LANGUES, langueDepuisEntete } from "@/lib/i18n";
 
 /**
  * Proxy (anciennement « middleware », renommé dans Next.js 16).
  *
- * Deux responsabilités :
- *  1. router le sous-domaine admin vers le segment /admin ;
- *  2. rafraîchir la session Supabase, faute de quoi les jetons expirés
+ * Trois responsabilités :
+ *  1. aiguiller le visiteur vers la langue de son navigateur quand l'URL n'en
+ *     porte pas ;
+ *  2. router le sous-domaine admin vers le segment /admin ;
+ *  3. rafraîchir la session Supabase, faute de quoi les jetons expirés
  *     déconnecteraient l'équipe en pleine saisie.
  *
  * Ce fichier ne porte PAS l'autorisation. La documentation Next.js est
@@ -23,9 +26,30 @@ export async function proxy(request: NextRequest) {
   const hote = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
   const { pathname } = request.nextUrl;
 
+  const surHoteAdmin = HOTES_ADMIN.has(hote);
+
+  // Le site vitrine vit sous un préfixe de langue, pas l'administration : elle
+  // n'est utilisée que par l'équipe interne et reste en français. Une URL sans
+  // préfixe est donc redirigée vers la langue la mieux adaptée à l'en-tête du
+  // navigateur, avant tout autre traitement.
+  if (!surHoteAdmin && !pathname.startsWith("/admin")) {
+    const prefixee = LANGUES.some(
+      (langue) => pathname === `/${langue}` || pathname.startsWith(`/${langue}/`),
+    );
+
+    if (!prefixee) {
+      const langue = langueDepuisEntete(request.headers.get("accept-language"));
+      const cible = request.nextUrl.clone();
+      cible.pathname = `/${langue}${pathname === "/" ? "" : pathname}`;
+      // Redirection et non réécriture : la langue doit apparaître dans l'URL
+      // pour être partageable et indexable séparément.
+      return NextResponse.redirect(cible);
+    }
+  }
+
   // Sur le domaine principal, /admin reste accessible : c'est le repli prévu
   // au cahier des charges §2.1 si le sous-domaine n'est pas mis en place.
-  const reecrire = HOTES_ADMIN.has(hote) && !pathname.startsWith("/admin");
+  const reecrire = surHoteAdmin && !pathname.startsWith("/admin");
 
   // Calculée une seule fois : `setAll` reconstruit la réponse plus bas et doit
   // viser la même URL, sans quoi la réécriture serait perdue.

@@ -75,7 +75,7 @@ async function chercher(reference: string): Promise<Resultat> {
   }
 }
 
-export default async function PageSuivi(props: PageProps<"/suivi">) {
+export default async function PageSuivi(props: PageProps<"/[lang]/suivi">) {
   const { reference } = await props.searchParams;
   const saisie = typeof reference === "string" ? reference.trim().toUpperCase() : "";
   const resultat = await chercher(saisie);

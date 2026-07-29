@@ -22,7 +22,7 @@ async function chargerArticle(slug: string) {
 }
 
 export async function generateMetadata(
-  props: PageProps<"/actualites/[slug]">,
+  props: PageProps<"/[lang]/actualites/[slug]">,
 ): Promise<Metadata> {
   const { slug } = await props.params;
   const article = await chargerArticle(slug);
@@ -41,7 +41,7 @@ export async function generateMetadata(
 }
 
 export default async function PageArticle(
-  props: PageProps<"/actualites/[slug]">,
+  props: PageProps<"/[lang]/actualites/[slug]">,
 ) {
   const { slug } = await props.params;
   const article = await chargerArticle(slug);
