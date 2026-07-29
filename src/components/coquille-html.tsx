@@ -42,6 +42,10 @@ export function CoquilleHtml({
       className={`${archivo.variable} h-full`}
       suppressHydrationWarning
     >
+      {/* `no-head-element` vise `next/head`, propre au Pages Router. Dans
+          l'App Router, c'est bien un <head> littéral qu'attend le guide
+          « Preventing Flash Before Hydration », qui décrit ce script. */}
+      {/* eslint-disable-next-line @next/next/no-head-element */}
       <head>
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_THEME }} />
       </head>
