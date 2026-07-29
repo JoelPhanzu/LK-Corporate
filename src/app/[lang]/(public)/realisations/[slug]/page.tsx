@@ -6,7 +6,9 @@ import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { EnTetePage } from "@/components/public/en-tete-page";
 import { LienBouton } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { getDomaine } from "@/lib/domaines";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import { domaine as getDomaine } from "@/lib/domaines-en";
+import { alternances, chemin, estLangue } from "@/lib/i18n";
 import { urlMedia } from "@/lib/medias";
 import { prisma } from "@/lib/prisma";
 
@@ -26,24 +28,33 @@ async function chargerRealisation(slug: string) {
 export async function generateMetadata(
   props: PageProps<"/[lang]/realisations/[slug]">,
 ): Promise<Metadata> {
-  const { slug } = await props.params;
+  const { lang, slug } = await props.params;
   const realisation = await chargerRealisation(slug);
-  if (!realisation) return {};
+  if (!realisation || !estLangue(lang)) return {};
 
   return {
     title: realisation.titre,
     description: realisation.description.slice(0, 160),
+    alternates: alternances(lang, `/realisations/${realisation.slug}`),
   };
 }
 
+/**
+ * Le titre, la description et les photos viennent de la base : ils restent
+ * dans la langue de rédaction, conformément au périmètre retenu. Seule
+ * l'interface qui les entoure est traduite.
+ */
 export default async function PageRealisation(
   props: PageProps<"/[lang]/realisations/[slug]">,
 ) {
-  const { slug } = await props.params;
+  const { lang, slug } = await props.params;
+  if (!estLangue(lang)) notFound();
+
   const realisation = await chargerRealisation(slug);
   if (!realisation) notFound();
 
-  const domaine = getDomaine(realisation.domaineSlug);
+  const dico = getDictionnaire(lang);
+  const domaine = getDomaine(realisation.domaineSlug, lang);
   const avant = urlMedia(realisation.photoAvantChemin);
   const apres = urlMedia(realisation.photoApresChemin);
 
@@ -59,11 +70,11 @@ export default async function PageRealisation(
       <section className="py-16 md:py-24">
         <Container>
           <Link
-            href="/realisations"
+            href={chemin(lang, "/realisations")}
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-text hover:underline"
           >
             <ArrowLeftIcon size={16} weight="bold" aria-hidden />
-            Toutes les réalisations
+            {dico.realisations.retour}
           </Link>
 
           {/* Comparaison avant / après : deux images légendées côte à côte,
@@ -76,14 +87,17 @@ export default async function PageRealisation(
                   <div className="relative aspect-4/3 overflow-hidden rounded-brand bg-surface-sunken">
                     <Image
                       src={avant}
-                      alt={`${realisation.titre}, avant travaux`}
+                      alt={dico.realisations.altAvant.replace(
+                        "{titre}",
+                        realisation.titre,
+                      )}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover"
                     />
                   </div>
                   <figcaption className="mt-2 text-sm font-semibold text-ink-muted">
-                    Avant
+                    {dico.realisations.avant}
                   </figcaption>
                 </figure>
               )}
@@ -92,14 +106,17 @@ export default async function PageRealisation(
                   <div className="relative aspect-4/3 overflow-hidden rounded-brand bg-surface-sunken">
                     <Image
                       src={apres}
-                      alt={`${realisation.titre}, après travaux`}
+                      alt={dico.realisations.altApres.replace(
+                        "{titre}",
+                        realisation.titre,
+                      )}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover"
                     />
                   </div>
                   <figcaption className="mt-2 text-sm font-semibold text-ink-muted">
-                    Après
+                    {dico.realisations.apres}
                   </figcaption>
                 </figure>
               )}
@@ -112,12 +129,12 @@ export default async function PageRealisation(
 
           {realisation.photosChemins.length > 0 && (
             <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {realisation.photosChemins.map((chemin) => {
-                const url = urlMedia(chemin);
+              {realisation.photosChemins.map((cheminMedia) => {
+                const url = urlMedia(cheminMedia);
                 if (!url) return null;
                 return (
                   <li
-                    key={chemin}
+                    key={cheminMedia}
                     className="relative aspect-4/3 overflow-hidden rounded-brand bg-surface-sunken"
                   >
                     <Image
@@ -135,21 +152,24 @@ export default async function PageRealisation(
 
           {domaine && (
             <div className="mt-12 border-t border-line pt-8">
+              {/* La phrase est coupée de part et d'autre du lien : l'ordre des
+                  mots diffère d'une langue à l'autre, et une chaîne unique
+                  avec un gabarit interdirait de placer le lien correctement. */}
               <p className="leading-relaxed text-ink-muted">
-                Ce projet relève du domaine{" "}
+                {dico.realisations.releveAvant}
                 <Link
-                  href={`/services/${domaine.slug}`}
+                  href={chemin(lang, `/services/${domaine.slug}`)}
                   className="font-semibold text-accent-text hover:underline"
                 >
                   {domaine.nom}
                 </Link>
-                .
+                {dico.realisations.releveApres}
               </p>
               <LienBouton
-                href={`/devis?domaine=${domaine.slug}`}
+                href={chemin(lang, `/devis?domaine=${domaine.slug}`)}
                 className="mt-5"
               >
-                Demander un devis
+                {dico.commun.demanderDevis}
               </LienBouton>
             </div>
           )}

@@ -186,7 +186,14 @@
     "erreurTitre": "Projects temporarily unavailable",
     "erreurTexte": "The list cannot be loaded at the moment. Please try again in a few minutes.",
     "videTitre": "The first projects will be published here",
-    "videTexte": "Each project is added from the admin area, with its before and after photos, description and location."
+    "videTexte": "Each project is added from the admin area, with its before and after photos, description and location.",
+    "retour": "All projects",
+    "avant": "Before",
+    "apres": "After",
+    "altAvant": "{titre}, before the works",
+    "altApres": "{titre}, after the works",
+    "releveAvant": "This project falls under the ",
+    "releveApres": " area."
   },
   "actualites": {
     "metaTitre": "News",
@@ -196,7 +203,9 @@
     "erreurTitre": "News temporarily unavailable",
     "erreurTexte": "The feed cannot be loaded at the moment. Please try again in a few minutes.",
     "videTitre": "No news published yet",
-    "videTexte": "Articles written from the admin area will appear here as soon as they are published."
+    "videTexte": "Articles written from the admin area will appear here as soon as they are published.",
+    "retour": "All news",
+    "publieLe": "Published on {date}"
   },
   "erreur404": {
     "etiquette": "Error 404",

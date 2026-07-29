@@ -94,11 +94,18 @@ const CHEMINS_TRADUITS = [
   // renvoyés par la Server Action restent français : ils n'apparaissent qu'à
   // la saisie, jamais dans ce que Google indexe.
   "/contact",
-  // Les listes seulement : les pages de détail gardent encore une interface
-  // française, et la correspondance est exacte hors /services/.
   "/realisations",
   "/actualites",
 ];
+
+/**
+ * Familles de pages dont l'interface est traduite, quel que soit le slug.
+ *
+ * Le contenu éditorial qu'elles portent reste dans sa langue de rédaction,
+ * conformément au périmètre retenu : c'est l'interface qui l'entoure — dates,
+ * retours, libellés de domaine — qui suit la langue de la page.
+ */
+const PREFIXES_TRADUITS = ["/services/", "/realisations/", "/actualites/"];
 
 export function traduite(langue: Langue, cheminNu: string): boolean {
   if (langue === LANGUE_PAR_DEFAUT) return true;
@@ -107,7 +114,8 @@ export function traduite(langue: Langue, cheminNu: string): boolean {
   // traduit et disparaîtrait du sitemap.
   const normalise = cheminNu === "" ? "/" : cheminNu;
   return (
-    CHEMINS_TRADUITS.includes(normalise) || normalise.startsWith("/services/")
+    CHEMINS_TRADUITS.includes(normalise) ||
+    PREFIXES_TRADUITS.some((prefixe) => normalise.startsWith(prefixe))
   );
 }
 

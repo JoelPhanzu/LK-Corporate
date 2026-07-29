@@ -186,7 +186,14 @@
     "erreurTitre": "Réalisations momentanément indisponibles",
     "erreurTexte": "La liste ne peut pas être chargée pour le moment. Réessayez dans quelques minutes.",
     "videTitre": "Les premières réalisations seront publiées ici",
-    "videTexte": "Chaque projet est ajouté depuis l'espace admin, avec ses photos avant et après, sa description et sa localisation."
+    "videTexte": "Chaque projet est ajouté depuis l'espace admin, avec ses photos avant et après, sa description et sa localisation.",
+    "retour": "Toutes les réalisations",
+    "avant": "Avant",
+    "apres": "Après",
+    "altAvant": "{titre}, avant travaux",
+    "altApres": "{titre}, après travaux",
+    "releveAvant": "Ce projet relève du domaine ",
+    "releveApres": "."
   },
   "actualites": {
     "metaTitre": "Actualités",
@@ -196,7 +203,9 @@
     "erreurTitre": "Actualités momentanément indisponibles",
     "erreurTexte": "Le fil ne peut pas être chargé pour le moment. Réessayez dans quelques minutes.",
     "videTitre": "Aucune actualité publiée pour l'instant",
-    "videTexte": "Les articles rédigés depuis l'espace admin apparaîtront ici dès leur publication."
+    "videTexte": "Les articles rédigés depuis l'espace admin apparaîtront ici dès leur publication.",
+    "retour": "Toutes les actualités",
+    "publieLe": "Publié le {date}"
   },
   "erreur404": {
     "etiquette": "Erreur 404",

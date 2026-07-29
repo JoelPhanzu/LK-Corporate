@@ -5,12 +5,12 @@ import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { EnTetePage } from "@/components/public/en-tete-page";
 import { Container } from "@/components/ui/container";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import { LOCALES_INTL, alternances, chemin, estLangue } from "@/lib/i18n";
 import { urlMedia } from "@/lib/medias";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-
-const dateFr = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" });
 
 async function chargerArticle(slug: string) {
   try {
@@ -24,13 +24,14 @@ async function chargerArticle(slug: string) {
 export async function generateMetadata(
   props: PageProps<"/[lang]/actualites/[slug]">,
 ): Promise<Metadata> {
-  const { slug } = await props.params;
+  const { lang, slug } = await props.params;
   const article = await chargerArticle(slug);
-  if (!article) return {};
+  if (!article || !estLangue(lang)) return {};
 
   return {
     title: article.titre,
     description: article.chapo,
+    alternates: alternances(lang, `/actualites/${article.slug}`),
     openGraph: {
       type: "article",
       title: article.titre,
@@ -43,10 +44,16 @@ export async function generateMetadata(
 export default async function PageArticle(
   props: PageProps<"/[lang]/actualites/[slug]">,
 ) {
-  const { slug } = await props.params;
+  const { lang, slug } = await props.params;
+  if (!estLangue(lang)) notFound();
+
   const article = await chargerArticle(slug);
   if (!article) notFound();
 
+  const dico = getDictionnaire(lang);
+  const dateLocale = new Intl.DateTimeFormat(LOCALES_INTL[lang], {
+    dateStyle: "long",
+  });
   const image = urlMedia(article.imageChemin);
 
   return (
@@ -57,11 +64,11 @@ export default async function PageArticle(
         <Container>
           <article className="max-w-[70ch]">
             <Link
-              href="/actualites"
+              href={chemin(lang, "/actualites")}
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-text hover:underline"
             >
               <ArrowLeftIcon size={16} weight="bold" aria-hidden />
-              Toutes les actualités
+              {dico.actualites.retour}
             </Link>
 
             {article.publieLe && (
@@ -70,7 +77,10 @@ export default async function PageArticle(
                   dateTime={article.publieLe.toISOString()}
                   className="text-sm text-ink-muted"
                 >
-                  Publié le {dateFr.format(article.publieLe)}
+                  {dico.actualites.publieLe.replace(
+                    "{date}",
+                    dateLocale.format(article.publieLe),
+                  )}
                 </time>
               </p>
             )}
