@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CoquilleHtml } from "@/components/coquille-html";
+import { SITE } from "@/lib/site";
 
 /**
  * Layout racine de l'espace d'administration.
@@ -11,6 +12,7 @@ import { CoquilleHtml } from "@/components/coquille-html";
  */
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
   title: { default: "Administration", template: "%s | Administration" },
   // Aucune page de l'espace d'administration n'a vocation à être indexée.
   robots: { index: false, follow: false },

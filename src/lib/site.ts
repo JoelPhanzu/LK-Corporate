@@ -40,15 +40,23 @@ export const RESEAUX: { nom: string; url: string }[] = [
   // À confirmer par le client
 ];
 
-/** Navigation principale du site vitrine. */
+/**
+ * Navigation principale du site vitrine.
+ *
+ * Les entrées portent une clé de traduction, pas un libellé : les chemins sont
+ * communs aux deux langues, seul le texte change. `cle` indexe `nav` dans les
+ * dictionnaires.
+ */
 export const NAV_PUBLIC = [
-  { href: "/", label: "Accueil" },
-  { href: "/a-propos", label: "À propos" },
-  { href: "/services", label: "Services" },
-  { href: "/realisations", label: "Réalisations" },
-  { href: "/actualites", label: "Actualités" },
-  { href: "/contact", label: "Contact" },
+  { href: "/", cle: "accueil" },
+  { href: "/a-propos", cle: "aPropos" },
+  { href: "/services", cle: "services" },
+  { href: "/realisations", cle: "realisations" },
+  { href: "/actualites", cle: "actualites" },
+  { href: "/contact", cle: "contact" },
 ] as const;
+
+export type CleNav = (typeof NAV_PUBLIC)[number]["cle"];
 
 /** Étapes de suivi d'une commande ou d'une livraison (cahier des charges §4). */
 export const ETAPES_LIVRAISON = [

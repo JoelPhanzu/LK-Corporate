@@ -42,6 +42,11 @@
     "themeAppareil": "Appareil",
     "langue": "Langue"
   },
+  "erreur404": {
+    "etiquette": "Erreur 404",
+    "titre": "Cette page n'existe pas",
+    "texte": "Le lien est peut-être incorrect ou la page a été déplacée. Vous pouvez reprendre depuis l'une des rubriques ci-dessous."
+  },
   "livraison": {
     "recue": "Reçue",
     "preparation": "En préparation",

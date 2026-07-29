@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { SelecteurLangue } from "@/components/preferences/selecteur-langue";
 import { SelecteurTheme } from "@/components/theme/selecteur-theme";
 import { Container } from "@/components/ui/container";
-import { DOMAINES } from "@/lib/domaines";
 import { getCoordonnees } from "@/lib/contenu";
+import { domaines } from "@/lib/domaines-en";
+import { getDictionnaire } from "@/lib/dictionnaire";
+import { chemin, type Langue } from "@/lib/i18n";
 import { NAV_PUBLIC, SITE } from "@/lib/site";
 
 const ANNEE = new Date().getFullYear();
@@ -13,65 +16,71 @@ const ANNEE = new Date().getFullYear();
  * chaque champ vide est simplement omis, et l'absence reste visible pour le
  * client tant qu'il ne les a pas transmises (cahier des charges §8).
  */
-export async function Footer() {
+export async function Footer({ langue }: { langue: Langue }) {
   const contact = await getCoordonnees();
   const adresse = [contact.adresse, contact.ville, contact.pays].filter(Boolean);
+  const dico = getDictionnaire(langue);
+  const listeDomaines = domaines(langue);
 
   return (
     <footer className="mt-auto bg-surface-brand-deep text-ink-on-brand-muted">
       <Container>
         <div className="grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:pr-8">
-            <Logo surMarque />
+            <Logo surMarque langue={langue} />
             <p className="mt-4 text-sm leading-relaxed max-w-[45ch]">
-              {SITE.description}
+              {dico.site.description}
             </p>
           </div>
 
-          <nav aria-label="Pied de page, navigation">
+          <nav aria-label={dico.pied.navigationAria}>
             <h2 className="text-sm font-semibold text-ink-on-brand">
-              Navigation
+              {dico.pied.navigation}
             </h2>
             <ul className="mt-4 space-y-2.5">
               {NAV_PUBLIC.map((item) => (
                 <li key={item.href}>
                   <Link
-                    href={item.href}
+                    href={chemin(langue, item.href)}
                     className="text-sm hover:text-ink-on-brand transition-colors"
                   >
-                    {item.label}
+                    {dico.nav[item.cle]}
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
 
-          <nav aria-label="Pied de page, services">
-            <h2 className="text-sm font-semibold text-ink-on-brand">Services</h2>
+          <nav aria-label={dico.pied.servicesAria}>
+            <h2 className="text-sm font-semibold text-ink-on-brand">
+              {dico.pied.services}
+            </h2>
             <ul className="mt-4 space-y-2.5">
-              {DOMAINES.slice(0, 5).map((domaine) => (
-                <li key={domaine.slug}>
+              {listeDomaines.slice(0, 5).map((item) => (
+                <li key={item.slug}>
                   <Link
-                    href={`/services/${domaine.slug}`}
+                    href={chemin(langue, `/services/${item.slug}`)}
                     className="text-sm hover:text-ink-on-brand transition-colors"
                   >
-                    {domaine.nom}
+                    {item.nom}
                   </Link>
                 </li>
               ))}
               <li>
                 <Link
-                  href="/services"
-                  className="text-sm text-accent-text hover:underline"
+                  href={chemin(langue, "/services")}
+                  className="text-sm text-accent-on-brand hover:underline"
                 >
-                  Voir les 9 domaines
+                  {dico.pied.voirTousDomaines}
                 </Link>
               </li>
             </ul>
           </nav>
 
           <div>
-            <h2 className="text-sm font-semibold text-ink-on-brand">Contact</h2>
+            <h2 className="text-sm font-semibold text-ink-on-brand">
+              {dico.pied.contact}
+            </h2>
             <ul className="mt-4 space-y-2.5 text-sm">
               {contact.telephone && (
                 <li>
@@ -102,10 +111,10 @@ export async function Footer() {
               )}
               <li>
                 <Link
-                  href="/suivi"
+                  href={chemin(langue, "/suivi")}
                   className="hover:text-ink-on-brand transition-colors"
                 >
-                  Suivre une commande
+                  {dico.commun.suivreCommande}
                 </Link>
               </li>
             </ul>
@@ -127,22 +136,30 @@ export async function Footer() {
           </div>
         </div>
 
-        {/* Rangée des préférences d'affichage. Le choix vaut pour tout le
-            site, espace d'administration compris : il est conservé par le
-            navigateur, pas par la page. */}
+        {/* Rangée des préférences d'affichage. Le thème vaut pour tout le site,
+            espace d'administration compris : il est conservé par le navigateur,
+            pas par la page. La langue, elle, ne concerne que le vitrine. */}
         <div className="flex flex-wrap items-start gap-x-12 gap-y-6 border-t border-white/10 py-7">
-          <SelecteurTheme />
+          <SelecteurLangue langue={langue} titre={dico.preferences.langue} />
+          <SelecteurTheme
+            libelles={{
+              titre: dico.preferences.theme,
+              clair: dico.preferences.themeClair,
+              sombre: dico.preferences.themeSombre,
+              appareil: dico.preferences.themeAppareil,
+            }}
+          />
         </div>
 
         <div className="flex flex-col gap-3 border-t border-white/10 py-6 text-xs sm:flex-row sm:items-center sm:justify-between">
           <p>
-            {ANNEE} {SITE.raisonSociale}. Tous droits réservés.
+            {ANNEE} {SITE.raisonSociale}. {dico.pied.droitsReserves}
           </p>
           <Link
-            href="/mentions-legales"
+            href={chemin(langue, "/mentions-legales")}
             className="hover:text-ink-on-brand transition-colors"
           >
-            Mentions légales
+            {dico.pied.mentionsLegales}
           </Link>
         </div>
       </Container>

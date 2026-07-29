@@ -12,15 +12,19 @@ import {
 } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
-const OPTIONS: {
-  valeur: PreferenceTheme;
-  label: string;
-  Icone: typeof SunIcon;
-}[] = [
-  { valeur: "clair", label: "Clair", Icone: SunIcon },
-  { valeur: "sombre", label: "Sombre", Icone: MoonIcon },
-  { valeur: "appareil", label: "Appareil", Icone: DesktopIcon },
-];
+const ICONES: Record<PreferenceTheme, typeof SunIcon> = {
+  clair: SunIcon,
+  sombre: MoonIcon,
+  appareil: DesktopIcon,
+};
+
+/** Libellés traduits, fournis par un composant serveur. */
+export type LibellesTheme = {
+  titre: string;
+  clair: string;
+  sombre: string;
+  appareil: string;
+};
 
 /**
  * Choix du thème : clair, sombre, ou celui de l'appareil.
@@ -29,7 +33,19 @@ const OPTIONS: {
  * n'est pas un troisième thème mais l'absence de choix, et une bascule ne
  * permettrait pas d'y revenir une fois qu'on l'a quittée.
  */
-export function SelecteurTheme({ className }: { className?: string }) {
+export function SelecteurTheme({
+  libelles,
+  className,
+}: {
+  libelles: LibellesTheme;
+  className?: string;
+}) {
+  const options: { valeur: PreferenceTheme; label: string }[] = [
+    { valeur: "clair", label: libelles.clair },
+    { valeur: "sombre", label: libelles.sombre },
+    { valeur: "appareil", label: libelles.appareil },
+  ];
+
   // L'initialiseur paresseux lit la même source que le script de <head>, si
   // bien que l'état de React s'accorde d'emblée au DOM déjà corrigé.
   const [preference, setPreference] = useState<PreferenceTheme>(() => {
@@ -67,11 +83,14 @@ export function SelecteurTheme({ className }: { className?: string }) {
 
   return (
     <fieldset className={cn("min-w-0", className)}>
-      <legend className="text-sm font-semibold text-ink-on-brand">Thème</legend>
+      <legend className="text-sm font-semibold text-ink-on-brand">
+        {libelles.titre}
+      </legend>
 
       <div className="mt-3 inline-flex rounded-brand border border-white/15 p-0.5">
-        {OPTIONS.map(({ valeur, label, Icone }) => {
+        {options.map(({ valeur, label }) => {
           const actif = preference === valeur;
+          const Icone = ICONES[valeur];
 
           return (
             <label

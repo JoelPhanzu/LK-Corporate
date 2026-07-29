@@ -42,6 +42,11 @@
     "themeAppareil": "Device",
     "langue": "Language"
   },
+  "erreur404": {
+    "etiquette": "Error 404",
+    "titre": "This page does not exist",
+    "texte": "The link may be incorrect, or the page may have moved. You can pick up again from one of the sections below."
+  },
   "livraison": {
     "recue": "Received",
     "preparation": "In preparation",

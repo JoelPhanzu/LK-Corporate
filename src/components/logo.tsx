@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { chemin, type Langue } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 /**
@@ -23,11 +24,19 @@ const HAUTEUR = 28;
 export function Logo({
   className,
   surMarque = false,
+  langue,
 }: {
   className?: string;
   /** true lorsque le logo est posé sur un aplat bleu marine. */
   surMarque?: boolean;
+  /**
+   * Langue du site vitrine, pour que le retour à l'accueil reste dans la
+   * langue courante. Omise dans l'espace d'administration, qui n'en a pas :
+   * le lien pointe alors la racine, que le proxy aiguille.
+   */
+  langue?: Langue;
 }) {
+  const accueil = langue ? chemin(langue, "/") : "/";
   // Sur un aplat marine, le verrou blanc convient dans les deux thèmes : la
   // teinte du bandeau ne varie pas. Ailleurs, la surface passe du blanc au
   // marine avec le thème, et le lettrage doit suivre, sans quoi il disparaît
@@ -36,6 +45,7 @@ export function Logo({
     return (
       <Verrou
         source="/marque/lk-corporate-inverse.png"
+        accueil={accueil}
         className={cn("inline-flex", className)}
       />
     );
@@ -45,10 +55,12 @@ export function Logo({
     <>
       <Verrou
         source="/marque/lk-corporate.png"
+        accueil={accueil}
         className={cn("verrou-sur-clair", className)}
       />
       <Verrou
         source="/marque/lk-corporate-inverse.png"
+        accueil={accueil}
         className={cn("verrou-sur-sombre", className)}
       />
     </>
@@ -57,14 +69,16 @@ export function Logo({
 
 function Verrou({
   source,
+  accueil,
   className,
 }: {
   source: string;
+  accueil: string;
   className?: string;
 }) {
   return (
     <Link
-      href="/"
+      href={accueil}
       aria-label="Lk-corporate, retour à l'accueil"
       className={cn("shrink-0 items-center", className)}
     >

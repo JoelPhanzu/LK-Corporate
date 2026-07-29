@@ -7,7 +7,7 @@ import { ListIcon, XIcon } from "@phosphor-icons/react";
 import { Logo } from "@/components/logo";
 import { LienBouton } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { NAV_PUBLIC } from "@/lib/site";
+import { chemin, type Langue } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 /**
@@ -15,11 +15,30 @@ import { cn } from "@/lib/utils";
  * actif et un état local pour le menu mobile. Il reste léger et sans animation
  * coûteuse, le coût d'hydratation est donc négligeable.
  *
+ * Les libellés arrivent en props : le dictionnaire est `server-only`, l'importer
+ * ici embarquerait les deux langues dans le bundle du navigateur.
+ *
  * « Accueil » est absent de la navigation desktop : le logo assure ce rôle, et
  * cela permet aux cinq entrées restantes de tenir sur une seule ligne dès
  * 1024px. Le menu mobile, lui, liste bien toutes les entrées.
  */
-export function Header() {
+export type EntreeNav = { href: string; label: string };
+
+export function Header({
+  langue,
+  entrees,
+  libelles,
+}: {
+  langue: Langue;
+  entrees: EntreeNav[];
+  libelles: {
+    principale: string;
+    principaleMobile: string;
+    ouvrirMenu: string;
+    fermerMenu: string;
+    devis: string;
+  };
+}) {
   const pathname = usePathname();
   const [ouvert, setOuvert] = useState(false);
 
@@ -42,39 +61,48 @@ export function Header() {
     };
   }, [ouvert]);
 
-  const estActif = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  // La comparaison porte sur le chemin préfixé : `/fr/services` et
+  // `/en/services` sont deux pages distinctes.
+  const estActif = (href: string) => {
+    const complet = chemin(langue, href);
+    return href === "/" ? pathname === complet : pathname.startsWith(complet);
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-surface-brand border-b border-white/10">
       <Container>
         <div className="flex h-[72px] items-center justify-between gap-6">
-          <Logo surMarque />
+          <Logo surMarque langue={langue} />
 
-          <nav aria-label="Navigation principale" className="hidden lg:block">
+          <nav aria-label={libelles.principale} className="hidden lg:block">
             <ul className="flex items-center gap-7">
-              {NAV_PUBLIC.filter((item) => item.href !== "/").map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    aria-current={estActif(item.href) ? "page" : undefined}
-                    className={cn(
-                      "text-sm font-medium transition-colors",
-                      estActif(item.href)
-                        ? "text-accent-on-brand"
-                        : "text-ink-on-brand-muted hover:text-ink-on-brand",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
+              {entrees
+                .filter((item) => item.href !== "/")
+                .map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={chemin(langue, item.href)}
+                      aria-current={estActif(item.href) ? "page" : undefined}
+                      className={cn(
+                        "text-sm font-medium transition-colors",
+                        estActif(item.href)
+                          ? "text-accent-on-brand"
+                          : "text-ink-on-brand-muted hover:text-ink-on-brand",
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
             </ul>
           </nav>
 
           <div className="flex items-center gap-2">
-            <LienBouton href="/devis" className="hidden sm:inline-flex">
-              Demander un devis
+            <LienBouton
+              href={chemin(langue, "/devis")}
+              className="hidden sm:inline-flex"
+            >
+              {libelles.devis}
             </LienBouton>
 
             <button
@@ -82,7 +110,7 @@ export function Header() {
               onClick={() => setOuvert((v) => !v)}
               aria-expanded={ouvert}
               aria-controls="menu-mobile"
-              aria-label={ouvert ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-label={ouvert ? libelles.fermerMenu : libelles.ouvrirMenu}
               className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-brand text-ink-on-brand hover:bg-white/10 transition-colors"
             >
               {ouvert ? (
@@ -101,12 +129,12 @@ export function Header() {
           className="lg:hidden border-t border-white/10 bg-surface-brand-deep"
         >
           <Container>
-            <nav aria-label="Navigation principale mobile" className="py-4">
+            <nav aria-label={libelles.principaleMobile} className="py-4">
               <ul className="flex flex-col">
-                {NAV_PUBLIC.map((item) => (
+                {entrees.map((item) => (
                   <li key={item.href}>
                     <Link
-                      href={item.href}
+                      href={chemin(langue, item.href)}
                       onClick={fermer}
                       aria-current={estActif(item.href) ? "page" : undefined}
                       className={cn(
@@ -122,11 +150,11 @@ export function Header() {
                 ))}
               </ul>
               <LienBouton
-                href="/devis"
+                href={chemin(langue, "/devis")}
                 onClick={fermer}
                 className="mt-5 w-full sm:hidden"
               >
-                Demander un devis
+                {libelles.devis}
               </LienBouton>
             </nav>
           </Container>
