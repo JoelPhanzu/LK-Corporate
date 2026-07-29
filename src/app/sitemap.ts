@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { DOMAINES } from "@/lib/domaines";
-import { ETIQUETTES_HREFLANG, LANGUES } from "@/lib/i18n";
+import { ETIQUETTES_HREFLANG, LANGUES, traduite } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { SITE } from "@/lib/site";
 
@@ -28,14 +28,18 @@ function entrees(
   priorite: number,
   lastModified: Date,
 ): MetadataRoute.Sitemap {
+  // Seules les langues réellement traduites sont déclarées : annoncer une URL
+  // anglaise qui sert du français ferait indexer une traduction inexistante.
+  const publiables = LANGUES.filter((langue) => traduite(langue, chemin));
+
   const languages = Object.fromEntries(
-    LANGUES.map((langue) => [
+    publiables.map((langue) => [
       ETIQUETTES_HREFLANG[langue],
       `${SITE.url}/${langue}${chemin}`,
     ]),
   );
 
-  return LANGUES.map((langue) => ({
+  return publiables.map((langue) => ({
     url: `${SITE.url}/${langue}${chemin}`,
     lastModified,
     priority: priorite,

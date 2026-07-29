@@ -61,6 +61,31 @@ export function cheminSansLangue(pathname: string): string {
 }
 
 /**
+ * Chemins dont la version anglaise est réellement traduite.
+ *
+ * Garde-fou temporaire. Les pages restantes existent sous /en mais servent
+ * encore du français : les laisser indexer ferait référencer des URL anglaises
+ * qui n'en sont pas, ce qui est long à corriger une fois installé. Elles sont
+ * donc marquées `noindex`, retirées du sitemap, et ne sont pas déclarées en
+ * `hreflang` — Google déconseille de pointer une alternative non indexable.
+ *
+ * Ajouter chaque chemin ici au fur et à mesure, puis supprimer ce mécanisme
+ * quand la traduction sera complète.
+ */
+const CHEMINS_TRADUITS = ["/", "/services"];
+
+export function traduite(langue: Langue, cheminNu: string): boolean {
+  if (langue === LANGUE_PAR_DEFAUT) return true;
+  // Le sitemap désigne l'accueil par une chaîne vide, le reste du code par
+  // « / » : sans cette normalisation, l'accueil anglais serait tenu pour non
+  // traduit et disparaîtrait du sitemap.
+  const normalise = cheminNu === "" ? "/" : cheminNu;
+  return (
+    CHEMINS_TRADUITS.includes(normalise) || normalise.startsWith("/services/")
+  );
+}
+
+/**
  * Bloc `alternates` des métadonnées d'une page.
  *
  * Déclare la canonique de la page ET ses équivalents dans l'autre langue.
@@ -71,7 +96,7 @@ export function alternances(langue: Langue, cheminNu: string) {
   return {
     canonical: chemin(langue, cheminNu),
     languages: Object.fromEntries(
-      LANGUES.map((autre) => [
+      LANGUES.filter((autre) => traduite(autre, cheminNu)).map((autre) => [
         ETIQUETTES_HREFLANG[autre],
         chemin(autre, cheminNu),
       ]),

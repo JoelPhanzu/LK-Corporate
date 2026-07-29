@@ -1,7 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { LANGUES, langueDepuisEntete } from "@/lib/i18n";
+import {
+  LANGUES,
+  cheminSansLangue,
+  langueDepuisEntete,
+  traduite,
+} from "@/lib/i18n";
 
 /**
  * Proxy (anciennement « middleware », renommé dans Next.js 16).
@@ -98,6 +103,18 @@ export async function proxy(request: NextRequest) {
     urlCible.pathname = `/admin${pathname === "/" ? "" : pathname}`;
   }
 
+  // Les pages anglaises encore non traduites servent du français : les faire
+  // indexer référencerait des URL anglaises qui n'en sont pas. L'en-tête HTTP
+  // vaut la balise `robots` et s'applique en un seul point, sans toucher
+  // chacune des pages concernées. `follow` est conservé pour que les liens
+  // qu'elles portent restent explorés.
+  const langueUrl = LANGUES.find(
+    (langue) => pathname === `/${langue}` || pathname.startsWith(`/${langue}/`),
+  );
+  const aMasquer =
+    langueUrl !== undefined &&
+    !traduite(langueUrl, cheminSansLangue(pathname));
+
   // Les en-têtes de cache sont posés ici, et non sur le retour final : la
   // réponse est reconstruite à chaque rafraîchissement de cookie, et un
   // chemin de sortie anticipé existe quand Supabase n'est pas configuré.
@@ -107,6 +124,7 @@ export async function proxy(request: NextRequest) {
       : NextResponse.next({ request });
     nouvelle.headers.set("Vary", VARY_RSC);
     nouvelle.headers.set("Cache-Control", SANS_CACHE_PARTAGE);
+    if (aMasquer) nouvelle.headers.set("X-Robots-Tag", "noindex, follow");
     return nouvelle;
   };
 
