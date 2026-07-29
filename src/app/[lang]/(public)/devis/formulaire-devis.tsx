@@ -5,15 +5,54 @@ import Link from "next/link";
 import { CheckCircleIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import { Bouton } from "@/components/ui/button";
 import { Champ, Input, Select, Textarea } from "@/components/ui/formulaire";
-import { DOMAINES } from "@/lib/domaines";
+import type { Domaine } from "@/lib/domaines";
 import { PIECE_JOINTE } from "@/lib/validations/devis";
 import { envoyerDevis } from "./actions";
 import { ETAT_DEVIS_INITIAL } from "./etats";
 
+/**
+ * Libellés traduits et domaines déjà localisés, fournis par la page : le
+ * dictionnaire est `server-only`, l'importer ici embarquerait les deux langues
+ * dans le bundle du navigateur.
+ */
+export type LibellesDevis = {
+  succesTitre: string;
+  succesTexte: string;
+  succesReference: string;
+  succesLien: string;
+  legendeCoordonnees: string;
+  legendeBesoin: string;
+  champNom: string;
+  champEmail: string;
+  aideEmail: string;
+  champTelephone: string;
+  champEntreprise: string;
+  champDomaine: string;
+  choisirDomaine: string;
+  champDescription: string;
+  aideDescription: string;
+  champBudget: string;
+  champDelai: string;
+  champAdresse: string;
+  aideAdresse: string;
+  champPieces: string;
+  aidePieces: string;
+  nePasRemplir: string;
+  envoyer: string;
+  envoi: string;
+  facultatif: string;
+};
+
 export function FormulaireDevis({
   domaineInitial,
+  domaines,
+  lienSuivi,
+  libelles,
 }: {
   domaineInitial?: string;
+  domaines: Domaine[];
+  lienSuivi: string;
+  libelles: LibellesDevis;
 }) {
   const [etat, action, enCours] = useActionState(
     envoyerDevis,
@@ -29,22 +68,21 @@ export function FormulaireDevis({
           aria-hidden
           className="text-accent-text"
         />
-        <h2 className="mt-4 text-2xl">Votre demande est enregistrée</h2>
+        <h2 className="mt-4 text-2xl">{libelles.succesTitre}</h2>
         <p className="mt-3 max-w-[60ch] leading-relaxed text-ink-muted">
-          Conservez cette référence : elle vous permet de suivre l&apos;état de
-          votre demande et de votre livraison à tout moment.
+          {libelles.succesTexte}
         </p>
         <p className="mt-6 text-sm font-semibold text-ink-muted">
-          Référence de suivi
+          {libelles.succesReference}
         </p>
         <p className="mt-1 text-3xl font-bold tracking-tight">
           {etat.reference}
         </p>
         <Link
-          href={`/suivi?reference=${etat.reference}`}
+          href={`${lienSuivi}?reference=${etat.reference}`}
           className="mt-6 inline-flex items-center text-sm font-semibold text-accent-text hover:underline"
         >
-          Suivre cette demande
+          {libelles.succesLien}
         </Link>
       </div>
     );
@@ -70,9 +108,9 @@ export function FormulaireDevis({
       )}
 
       <fieldset className="space-y-6">
-        <legend className="text-lg font-bold">Vos coordonnées</legend>
+        <legend className="text-lg font-bold">{libelles.legendeCoordonnees}</legend>
 
-        <Champ htmlFor="nom" label="Nom et prénom" obligatoire erreur={erreurs.nom}>
+        <Champ htmlFor="nom" label={libelles.champNom} obligatoire erreur={erreurs.nom}>
           <Input
             id="nom"
             name="nom"
@@ -86,8 +124,8 @@ export function FormulaireDevis({
         <div className="grid gap-6 sm:grid-cols-2">
           <Champ
             htmlFor="email"
-            label="Email"
-            aide="Email ou téléphone, au moins l'un des deux."
+            label={libelles.champEmail}
+            aide={libelles.aideEmail}
             erreur={erreurs.email}
           >
             <Input
@@ -102,7 +140,7 @@ export function FormulaireDevis({
             />
           </Champ>
 
-          <Champ htmlFor="telephone" label="Téléphone" erreur={erreurs.telephone}>
+          <Champ htmlFor="telephone" label={libelles.champTelephone} libelleFacultatif={libelles.facultatif} erreur={erreurs.telephone}>
             <Input
               id="telephone"
               name="telephone"
@@ -113,7 +151,7 @@ export function FormulaireDevis({
           </Champ>
         </div>
 
-        <Champ htmlFor="entreprise" label="Entreprise ou institution">
+        <Champ htmlFor="entreprise" label={libelles.champEntreprise} libelleFacultatif={libelles.facultatif}>
           <Input
             id="entreprise"
             name="entreprise"
@@ -123,11 +161,11 @@ export function FormulaireDevis({
       </fieldset>
 
       <fieldset className="space-y-6 border-t border-line pt-7">
-        <legend className="text-lg font-bold">Votre besoin</legend>
+        <legend className="text-lg font-bold">{libelles.legendeBesoin}</legend>
 
         <Champ
           htmlFor="domaineSlug"
-          label="Domaine d'activité"
+          label={libelles.champDomaine}
           obligatoire
           erreur={erreurs.domaineSlug}
         >
@@ -139,9 +177,9 @@ export function FormulaireDevis({
             enErreur={Boolean(erreurs.domaineSlug)}
           >
             <option value="" disabled>
-              Choisissez un domaine
+              {libelles.choisirDomaine}
             </option>
-            {DOMAINES.map((domaine) => (
+            {domaines.map((domaine) => (
               <option key={domaine.slug} value={domaine.slug}>
                 {domaine.nom}
               </option>
@@ -151,8 +189,8 @@ export function FormulaireDevis({
 
         <Champ
           htmlFor="description"
-          label="Description de votre projet"
-          aide="Nature des travaux, quantités, localisation, contraintes particulières."
+          label={libelles.champDescription}
+          aide={libelles.aideDescription}
           obligatoire
           erreur={erreurs.description}
         >
@@ -171,18 +209,18 @@ export function FormulaireDevis({
         </Champ>
 
         <div className="grid gap-6 sm:grid-cols-2">
-          <Champ htmlFor="budget" label="Budget envisagé">
+          <Champ htmlFor="budget" label={libelles.champBudget} libelleFacultatif={libelles.facultatif}>
             <Input id="budget" name="budget" />
           </Champ>
-          <Champ htmlFor="delaiSouhaite" label="Délai souhaité">
+          <Champ htmlFor="delaiSouhaite" label={libelles.champDelai} libelleFacultatif={libelles.facultatif}>
             <Input id="delaiSouhaite" name="delaiSouhaite" />
           </Champ>
         </div>
 
         <Champ
           htmlFor="adresseLivraison"
-          label="Adresse de livraison"
-          aide="À renseigner pour une commande de matériaux ou une prestation de transport."
+          label={libelles.champAdresse} libelleFacultatif={libelles.facultatif}
+          aide={libelles.aideAdresse}
         >
           <Input
             id="adresseLivraison"
@@ -194,8 +232,8 @@ export function FormulaireDevis({
 
         <Champ
           htmlFor="pieces"
-          label="Documents ou photos"
-          aide={`JPG, PNG, WebP ou PDF. ${PIECE_JOINTE.nombreMax} fichiers au maximum, 10 Mo chacun.`}
+          label={libelles.champPieces} libelleFacultatif={libelles.facultatif}
+          aide={libelles.aidePieces.replace("{nombre}", String(PIECE_JOINTE.nombreMax))}
         >
           <input
             id="pieces"
@@ -211,12 +249,12 @@ export function FormulaireDevis({
 
       {/* Piège à robots : masqué visuellement et retiré du parcours clavier. */}
       <div aria-hidden className="hidden">
-        <label htmlFor="site_web">Ne pas remplir</label>
+        <label htmlFor="site_web">{libelles.nePasRemplir}</label>
         <input id="site_web" name="site_web" tabIndex={-1} autoComplete="off" />
       </div>
 
       <Bouton type="submit" disabled={enCours} className="w-full sm:w-auto">
-        {enCours ? "Envoi en cours..." : "Envoyer ma demande"}
+        {enCours ? libelles.envoi : libelles.envoyer}
       </Bouton>
     </form>
   );

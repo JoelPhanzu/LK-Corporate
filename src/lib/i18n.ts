@@ -96,6 +96,7 @@ const CHEMINS_TRADUITS = [
   "/contact",
   "/realisations",
   "/actualites",
+  "/devis",
 ];
 
 /**
