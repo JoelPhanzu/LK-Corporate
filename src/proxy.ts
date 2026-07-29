@@ -41,6 +41,23 @@ const VARY_RSC = [
   "Next-Router-Segment-Prefetch",
 ].join(", ");
 
+/**
+ * Interdit aux caches partagés de conserver les réponses de navigation.
+ *
+ * Next.js sert ses pages prérendues avec un `s-maxage` d'un an, en comptant sur
+ * le `Vary` ci-dessus pour séparer le document HTML du payload RSC. Or le CDN
+ * de l'hébergeur réécrit ce `Vary` en `Accept-Encoding` : les deux variantes
+ * se retrouvent alors sous la même clé, et la première servie est rejouée pour
+ * tout le monde — un visiteur reçoit le payload en texte brut à la place du
+ * site.
+ *
+ * Tant que le `Vary` n'est pas respecté de bout en bout, la seule protection
+ * fiable est d'empêcher la mise en cache partagée de ces réponses. Les fichiers
+ * de `_next/static`, exclus du matcher, gardent leur cache immuable : c'est eux
+ * qui pèsent, pas le HTML.
+ */
+const SANS_CACHE_PARTAGE = "private, no-store";
+
 export async function proxy(request: NextRequest) {
   const hote = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
   const { pathname } = request.nextUrl;
@@ -64,6 +81,7 @@ export async function proxy(request: NextRequest) {
       // pour être partageable et indexable séparément.
       const redirection = NextResponse.redirect(cible);
       redirection.headers.set("Vary", VARY_RSC);
+      redirection.headers.set("Cache-Control", SANS_CACHE_PARTAGE);
       return redirection;
     }
   }
@@ -80,10 +98,17 @@ export async function proxy(request: NextRequest) {
     urlCible.pathname = `/admin${pathname === "/" ? "" : pathname}`;
   }
 
-  const construireReponse = () =>
-    urlCible
+  // Les en-têtes de cache sont posés ici, et non sur le retour final : la
+  // réponse est reconstruite à chaque rafraîchissement de cookie, et un
+  // chemin de sortie anticipé existe quand Supabase n'est pas configuré.
+  const construireReponse = () => {
+    const nouvelle = urlCible
       ? NextResponse.rewrite(urlCible, { request })
       : NextResponse.next({ request });
+    nouvelle.headers.set("Vary", VARY_RSC);
+    nouvelle.headers.set("Cache-Control", SANS_CACHE_PARTAGE);
+    return nouvelle;
+  };
 
   let reponse = construireReponse();
 
