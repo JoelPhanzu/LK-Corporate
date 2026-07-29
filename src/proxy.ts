@@ -22,6 +22,25 @@ import { LANGUES, langueDepuisEntete } from "@/lib/i18n";
 /** Hôtes servant l'espace admin. À ajuster après le choix d'hébergement. */
 const HOTES_ADMIN = new Set(["admin.lk-corporate.com", "admin.localhost"]);
 
+/**
+ * En-têtes dont dépend le corps d'une réponse Next.js.
+ *
+ * Une même URL sert deux contenus : le document HTML pour une navigation, et
+ * le payload React Server Components quand le routeur préfetche, ce qu'il
+ * signale par `RSC`. Sans ce `Vary`, une redirection émise ici est mise en
+ * cache par le navigateur sans distinguer les deux, et la navigation suivante
+ * rejoue le payload : la page s'affiche alors en texte brut.
+ *
+ * Next.js pose déjà ces en-têtes sur ses propres réponses ; les redirections
+ * fabriquées par le proxy doivent faire de même.
+ */
+const VARY_RSC = [
+  "RSC",
+  "Next-Router-State-Tree",
+  "Next-Router-Prefetch",
+  "Next-Router-Segment-Prefetch",
+].join(", ");
+
 export async function proxy(request: NextRequest) {
   const hote = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
   const { pathname } = request.nextUrl;
@@ -43,7 +62,9 @@ export async function proxy(request: NextRequest) {
       cible.pathname = `/${langue}${pathname === "/" ? "" : pathname}`;
       // Redirection et non réécriture : la langue doit apparaître dans l'URL
       // pour être partageable et indexable séparément.
-      return NextResponse.redirect(cible);
+      const redirection = NextResponse.redirect(cible);
+      redirection.headers.set("Vary", VARY_RSC);
+      return redirection;
     }
   }
 
